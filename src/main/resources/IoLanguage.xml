@@ -1,0 +1,163 @@
+<?xml version='1.0'?>
+<list>
+    <option name="IO_BEAN_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_BEAN_NAME">
+        <value>
+            <option name="FOREGROUND" value="#CD8C95"/>
+        </value>
+    </option>
+    <option name="IO_DIGIT">
+        <value>
+            <option name="FOREGROUND" value="#3f4374"/>
+        </value>
+    </option>
+    <option name="IO_ENUM_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_ENUM_NAME">
+        <value>
+            <option name="FOREGROUND" value="#CD8C95"/>
+        </value>
+    </option>
+    <option name="IO_EQUAL">
+        <value>
+            <option name="FOREGROUND" value="#55b6b7"/>
+        </value>
+    </option>
+    <option name="IO_EVENT_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_EVENT_ID">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_EVENT_NAME">
+        <value>
+            <option name="FOREGROUND" value="#CD8C95"/>
+        </value>
+    </option>
+    <option name="IO_FIELD_COMMENT">
+        <value>
+            <option name="FOREGROUND" value="#808080"/>
+        </value>
+    </option>
+    <option name="IO_FIELD_INDEX">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_FIELD_NAME">
+        <value>
+            <option name="FOREGROUND" value="#778899"/>
+        </value>
+    </option>
+    <option name="IO_FIELD_TYPE_BASE">
+        <value>
+            <option name="FOREGROUND" value="#b389c5"/>
+        </value>
+    </option>
+    <option name="IO_FIELD_TYPE_QUOTE">
+        <value>
+            <option name="FOREGROUND" value="#CD8C95"/>
+        </value>
+    </option>
+    <option name="IO_IDENTIFIER">
+        <value>
+            <option name="FOREGROUND" value="#fd099"/>
+        </value>
+    </option>
+    <option name="IO_IMPORT_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_IMPORT_VALUE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_JAVA_PACK_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_JAVA_PACK_VALUE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_LEFT_BRACE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_LEFT_BRACKET">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_LINE_COMMENT">
+        <value>
+            <option name="FOREGROUND" value="#629755"/>
+        </value>
+    </option>
+    <option name="IO_MESSAGE_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_MESSAGE_ID">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_MESSAGE_NAME">
+        <value>
+            <option name="FOREGROUND" value="#CD8C95"/>
+        </value>
+    </option>
+    <option name="IO_MESSAGE_TYPE_CS">
+        <value>
+            <option name="FOREGROUND" value="#6C7B8B"/>
+        </value>
+    </option>
+    <option name="IO_MESSAGE_TYPE_SC">
+        <value>
+            <option name="FOREGROUND" value="#636363"/>
+        </value>
+    </option>
+    <option name="IO_NAMESPACE_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_NAMESPACE_VALUE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_RIGHT_BRACE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_RIGHT_BRACKET">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+    <option name="IO_SEMICOLON">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+</list>

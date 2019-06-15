@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.9'
+}
+apply plugin: "org.jetbrains.intellij"
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group 'com.senpure'
+version '1.1'
+
+sourceCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDirs "gen"
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+def senpureVersion = '1.0-SNAPSHOT'
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'com.senpure', name: 'senpure-io-generator', version: "$senpureVersion"
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2019.1.2'
+    sandboxDirectory =project.rootDir.canonicalPath + "/.sandbox"
+
+}
+patchPluginXml {
+    changeNotes """
+      <![CDATA[
+       io-support.<br>
+       <em>io-syntaxHighlighter</em>
+       <em>io-format</em>
+    ]]>"""
+}

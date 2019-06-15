@@ -1,0 +1,71 @@
+<idea-plugin>
+    <id>com.senpure.io.support.plugin.intellij</id>
+    <name>io-support</name>
+    <version>1.4</version>
+    <vendor email="senpure@senpure.com" url="http://www.senpure.com">senpure</vendor>
+    <description><![CDATA[
+         io-support.<br>
+        <em>io-syntaxHighlighter</em>
+       <em>io-format</em>
+    ]]></description>
+
+    <change-notes><![CDATA[
+       io-support.<br>
+       <em>io-syntaxHighlighter</em>
+       <em>io-format</em>
+    ]]>
+    </change-notes>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+    <extensions defaultExtensionNs="com.intellij">
+        <fileTypeFactory implementation="com.senpure.io.support.plugin.intellij.IoFileTypeFactory"/>
+
+
+        <lang.parserDefinition language="Io"
+                               implementationClass="com.senpure.io.support.plugin.intellij.IoParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Io"
+                                       implementationClass="com.senpure.io.support.plugin.intellij.IoSyntaxHighlighterFactory"/>
+
+        <colorSettingsPage implementation="com.senpure.io.support.plugin.intellij.IoColorSettingsPage"/>
+
+        <annotator language="Io" implementationClass="com.senpure.io.support.plugin.intellij.IoAnnotator"/>
+        <additionalTextAttributes scheme="Darcula" file="IoLanguage.xml"/>
+        <completion.contributor language="Io"
+                                implementationClass="com.senpure.io.support.plugin.intellij.IoCompletionContributor"/>
+        <lang.formatter language="Io"
+                        implementationClass="com.senpure.io.support.plugin.intellij.IoFormattingModelBuilder"/>
+
+        <lang.foldingBuilder language="Io"
+                             implementationClass="com.senpure.io.support.plugin.intellij.IoFoldingBuilder"/>
+
+        <psi.referenceContributor
+                implementation="com.senpure.io.support.plugin.intellij.reference.IoReferenceContributor"/>
+
+        <lang.findUsagesProvider language="Io"
+
+                                 implementationClass="com.senpure.io.support.plugin.intellij.usages.IoFindUsagesProvider"/>
+
+        <findUsagesHandlerFactory
+
+                implementation="com.senpure.io.support.plugin.intellij.usages.IoFindUsagesHandlerFactory"/>
+
+        <gotoSymbolContributor implementation="com.senpure.io.support.plugin.intellij.IoChooseByNameContributor"/>
+        <!--  -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+    <project-components>
+        <component>
+            <implementation-class>com.senpure.io.support.plugin.intellij.component.IoReaderComponent
+            </implementation-class>
+        </component>
+    </project-components>
+</idea-plugin>
