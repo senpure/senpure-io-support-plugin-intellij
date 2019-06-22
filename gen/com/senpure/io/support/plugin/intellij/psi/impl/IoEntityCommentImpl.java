@@ -27,9 +27,15 @@ public class IoEntityCommentImpl extends ASTWrapperPsiElement implements IoEntit
   }
 
   @Override
-  @NotNull
+  @Nullable
+  public PsiElement getTCodeComment() {
+    return findChildByType(T_CODE_COMMENT);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getTLineComment() {
-    return findNotNullChildByType(T_LINE_COMMENT);
+    return findChildByType(T_LINE_COMMENT);
   }
 
 }

@@ -50,6 +50,7 @@ public interface IoTypes {
 
   IElementType T_BEAN_HEAD = new IoTokenType("T_BEAN_HEAD");
   IElementType T_BEAN_NAME = new IoTokenType("T_BEAN_NAME");
+  IElementType T_CODE_COMMENT = new IoTokenType("T_CODE_COMMENT");
   IElementType T_DIGIT = new IoTokenType("T_DIGIT");
   IElementType T_ENUM_HEAD = new IoTokenType("T_ENUM_HEAD");
   IElementType T_ENUM_NAME = new IoTokenType("T_ENUM_NAME");

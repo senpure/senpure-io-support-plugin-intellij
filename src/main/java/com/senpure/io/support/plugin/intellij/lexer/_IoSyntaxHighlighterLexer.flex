@@ -33,7 +33,7 @@ FIELD_TYPE_BASE=int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|Strin
 IDENTIFIER=[a-zA-Z][a-zA-Z0-9_]*
 HEAD_VALUE=[a-zA-Z0-9_\./\\]+
 LINE_COMMENT="//"[^\r\n]*
-
+CODE_COMMENT=#[^\r\n]*
 %state MESSAGE_TAG
 %state FIELD_TAG
 %state FIELD_NAME_TAG
@@ -49,6 +49,7 @@ LINE_COMMENT="//"[^\r\n]*
 <YYINITIAL,ENTITY_TAG> {
    {WHITE_SPACE}          { return WHITE_SPACE; }
    {LINE_COMMENT}         {  yybegin(ENTITY_TAG); return T_LINE_COMMENT; }
+   {CODE_COMMENT}         {  yybegin(ENTITY_TAG); return T_CODE_COMMENT; }
     "import"              {  yybegin(IMPORT_TAG);return  T_IMPORT_HEAD;}
     "namespace"           {  yybegin(NAMEPACE_TAG); return  T_NAMESPACE_HEAD;}
     "javaPack"            {  yybegin(JAVA_PACK_TAG); return  T_JAVA_PACK_HEAD;}
@@ -93,6 +94,7 @@ LINE_COMMENT="//"[^\r\n]*
   {FIELD_TYPE_BASE}      { yybegin(FIELD_NAME_TAG);return T_FIELD_TYPE_BASE; }
   {IDENTIFIER}           { yybegin(FIELD_NAME_TAG); return T_FIELD_TYPE_QUOTE; }
   {LINE_COMMENT}         { yybegin(FIELD_TAG);return T_FIELD_COMMENT;}
+  {CODE_COMMENT}         { yybegin(FIELD_TAG); return T_CODE_COMMENT; }
 
 }
 <FIELD_NAME_TAG>{
@@ -131,12 +133,14 @@ LINE_COMMENT="//"[^\r\n]*
  "="                     { return T_EQUAL; }
  {DIGIT}                 { return T_FIELD_INDEX; }
  ";"                     { return T_SEMICOLON;}
-  {LINE_COMMENT}         { ;return T_FIELD_COMMENT;}
+  {LINE_COMMENT}         { return T_FIELD_COMMENT;}
+  {CODE_COMMENT}         { return T_CODE_COMMENT; }
  "}"                     { yybegin(YYINITIAL);return T_RIGHT_BRACE; }
 }
 
 {WHITE_SPACE}          { return WHITE_SPACE; }
 {LINE_COMMENT}         { return T_LINE_COMMENT; }
+{CODE_COMMENT}         { return T_CODE_COMMENT; }
 "["                    { return T_LEFT_BRACKET; }
 "]"                    { return T_RIGHT_BRACKET; }
 "{"                    { yybegin(FIELD_TAG); return T_LEFT_BRACE; }

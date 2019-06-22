@@ -1,16 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.senpure.io.support.plugin.intellij.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
-import static com.senpure.io.support.plugin.intellij.psi.impl.IoParserUtil.*;
+import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
-import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+
+import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
+import static com.senpure.io.support.plugin.intellij.psi.impl.IoParserUtil.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class IoParser implements PsiParser, LightPsiParser {
@@ -44,7 +44,6 @@ public class IoParser implements PsiParser, LightPsiParser {
   //           rightBrace
   public static boolean bean(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bean")) return false;
-    if (!nextTokenIs(b, "<bean>", T_BEAN_HEAD, T_LINE_COMMENT)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BEAN, "<bean>");
     r = bean_0(b, l + 1);
@@ -122,14 +121,15 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // T_LINE_COMMENT
+  // T_LINE_COMMENT|T_CODE_COMMENT
   public static boolean entityComment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entityComment")) return false;
-    if (!nextTokenIs(b, T_LINE_COMMENT)) return false;
+    if (!nextTokenIs(b, "<entity comment>", T_CODE_COMMENT, T_LINE_COMMENT)) return false;
     boolean r;
-    Marker m = enter_section_(b);
+    Marker m = enter_section_(b, l, _NONE_, ENTITY_COMMENT, "<entity comment>");
     r = consumeToken(b, T_LINE_COMMENT);
-    exit_section_(b, m, ENTITY_COMMENT, r);
+    if (!r) r = consumeToken(b, T_CODE_COMMENT);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -141,7 +141,6 @@ public class IoParser implements PsiParser, LightPsiParser {
   //           rightBrace
   public static boolean enum_$(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enum_$")) return false;
-    if (!nextTokenIs(b, "<enum $>", T_ENUM_HEAD, T_LINE_COMMENT)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENUM, "<enum $>");
     r = enum_0(b, l + 1);
@@ -264,7 +263,6 @@ public class IoParser implements PsiParser, LightPsiParser {
   //           rightBrace
   public static boolean event(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "event")) return false;
-    if (!nextTokenIs(b, "<event>", T_EVENT_HEAD, T_LINE_COMMENT)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, EVENT, "<event>");
     r = event_0(b, l + 1);
@@ -568,7 +566,6 @@ public class IoParser implements PsiParser, LightPsiParser {
   //           rightBrace
   public static boolean message(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "message")) return false;
-    if (!nextTokenIs(b, "<message>", T_LINE_COMMENT, T_MESSAGE_HEAD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MESSAGE, "<message>");
     r = message_0(b, l + 1);

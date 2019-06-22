@@ -40,7 +40,7 @@ public class IoVisitor extends PsiElementVisitor {
   }
 
   public void visitEnumName(@NotNull IoEnumName o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitEqual(@NotNull IoEqual o) {
@@ -60,7 +60,7 @@ public class IoVisitor extends PsiElementVisitor {
   }
 
   public void visitEventName(@NotNull IoEventName o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitField(@NotNull IoField o) {
@@ -136,7 +136,7 @@ public class IoVisitor extends PsiElementVisitor {
   }
 
   public void visitMessageName(@NotNull IoMessageName o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitMessageType(@NotNull IoMessageType o) {

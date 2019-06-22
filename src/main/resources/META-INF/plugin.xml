@@ -22,6 +22,7 @@
     <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
     -->
+    <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <fileTypeFactory implementation="com.senpure.io.support.plugin.intellij.IoFileTypeFactory"/>
 
@@ -44,18 +45,25 @@
                              implementationClass="com.senpure.io.support.plugin.intellij.IoFoldingBuilder"/>
 
         <psi.referenceContributor
+                language="Io"
                 implementation="com.senpure.io.support.plugin.intellij.reference.IoReferenceContributor"/>
 
         <lang.findUsagesProvider language="Io"
 
                                  implementationClass="com.senpure.io.support.plugin.intellij.usages.IoFindUsagesProvider"/>
 
-        <findUsagesHandlerFactory
-
-                implementation="com.senpure.io.support.plugin.intellij.usages.IoFindUsagesHandlerFactory"/>
-
+        <!--
+        <renamePsiElementProcessor implementation="com.senpure.io.support.plugin.intellij.IoRenamePsiElementProcessor"/>
+       -->
+        <!--
+        gotoSymbolContributor gotoClassContributor
+        -->
         <gotoSymbolContributor implementation="com.senpure.io.support.plugin.intellij.IoChooseByNameContributor"/>
-        <!--  -->
+        <!--
+               <lang.psiStructureViewFactory language="Io" implementationClass="com.senpure.io.support.plugin.intellij.structure.IoStructureViewFactory"/>
+         -->
+        <lang.commenter language="Io" implementationClass="com.senpure.io.support.plugin.intellij.IoCommenter"/>
+           <!--  -->
     </extensions>
 
     <actions>

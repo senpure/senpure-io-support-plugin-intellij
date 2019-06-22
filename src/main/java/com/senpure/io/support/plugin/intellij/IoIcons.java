@@ -12,5 +12,7 @@ import javax.swing.*;
  */
 public class IoIcons {
 
-    public static final Icon FILE = IconLoader.getIcon("/icon.png");
+    public static final Icon FILE = IconLoader.getIcon("/icons/icon.png");
+    public static final Icon CS_MESSAGE = IconLoader.getIcon("/icons/icon.png");
+    public static final Icon SC_MESSAGE = IconLoader.getIcon("/icons/response.png");
 }

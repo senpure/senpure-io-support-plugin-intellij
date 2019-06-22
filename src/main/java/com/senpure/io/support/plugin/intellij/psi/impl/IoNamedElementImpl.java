@@ -2,6 +2,7 @@ package com.senpure.io.support.plugin.intellij.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiReference;
 import com.senpure.io.support.plugin.intellij.psi.IoNamedElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,4 +16,14 @@ public abstract class IoNamedElementImpl extends ASTWrapperPsiElement implements
     public IoNamedElementImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+
+    @Override
+    @NotNull
+    public PsiReference[] getReferences() {
+
+        return IoPsiImplUtil.getReferences(this);
+    }
+
+
 }

@@ -42,7 +42,7 @@ public class IoParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public TokenSet getCommentTokens() {
-        return TokenSet.create(IoTypes.T_LINE_COMMENT);
+        return TokenSet.create(IoTypes.T_CODE_COMMENT);
     }
 
     @NotNull

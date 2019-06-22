@@ -8,6 +8,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import com.senpure.io.support.plugin.intellij.IoLexerAdapter;
 import com.senpure.io.support.plugin.intellij.psi.IoFieldType;
+import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -28,14 +29,14 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
     public WordsScanner getWordsScanner() {
         return new DefaultWordsScanner(new IoLexerAdapter(),
                 // TokenSet.create(IoTypes.T_BEAN_NAME),
-                TokenSet.ANY,
-                TokenSet.create(),
+                TokenSet.create(IoTypes.BEAN_NAME),
+                TokenSet.create(IoTypes.T_CODE_COMMENT),
                 TokenSet.EMPTY);
     }
 
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-      //  logger.debug("canFindUsagesFor: {} -> {}", psiElement, psiElement.getText());
+        //  logger.debug("canFindUsagesFor: {} -> {}", psiElement, psiElement.getText());
         return psiElement instanceof PsiNamedElement;
     }
 
@@ -48,7 +49,7 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getType(@NotNull PsiElement element) {
-       // logger.debug("getType: {} -> {}", element, element.getText());
+        // logger.debug("getType: {} -> {}", element, element.getText());
         if (element instanceof IoFieldType) {
             // IoFieldName fieldName = (IoFieldName) element;
             return "fieldType";
@@ -75,7 +76,7 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
         if (element instanceof IoFieldType) {
             IoFieldType fieldType = (IoFieldType) element;
-            return fieldType.getText()+"feldtype";
+            return fieldType.getText() + "feldtype";
         } else {
             return element.getText() + "_B";
         }

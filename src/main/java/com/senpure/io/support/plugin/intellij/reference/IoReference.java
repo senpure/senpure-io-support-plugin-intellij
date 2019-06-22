@@ -5,8 +5,9 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
+import com.intellij.util.IncorrectOperationException;
 import com.senpure.io.support.plugin.intellij.IoIcons;
-import com.senpure.io.support.plugin.intellij.psi.IoBeanName;
+import com.senpure.io.support.plugin.intellij.psi.*;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,23 +22,26 @@ import java.util.List;
  * @time 2019-06-14 14:39:44
  */
 public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+    private String name;
+
     public IoReference(@NotNull PsiElement element, TextRange rangeInElement) {
         super(element, rangeInElement);
+        name = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
     }
 
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-
-        List<IoBeanName> ioBeanNames = IoUtil.findNames(project);
+        List<IoNamedElement> namedElements = IoUtil.findEntities(project, name);
         List<ResolveResult> results = new ArrayList<>();
-        for (IoBeanName beanName : ioBeanNames) {
-            results.add(new PsiElementResolveResult(beanName));
+
+        for (IoNamedElement namedElement : namedElements) {
+            results.add(new PsiElementResolveResult(namedElement));
         }
+
         return results.toArray(new ResolveResult[results.size()]);
     }
-
 
 
     @Nullable
@@ -51,14 +55,40 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        List<IoBeanName> ioBeanNames = IoUtil.findNames(project);
         List<LookupElement> variants = new ArrayList<>();
-        for (IoBeanName beanName : ioBeanNames) {
-            variants.add(LookupElementBuilder.create(beanName).
-                    withIcon(IoIcons.FILE).
-                    withTypeText(beanName.getContainingFile().getName())
-            );
+        List<IoEntity> entities = IoUtil.findEntities(project);
+
+        for (IoEntity entity : entities) {
+            IoBean bean = entity.getBean();
+            if (bean != null) {
+                IoBeanName beanName = bean.getBeanName();
+                if (beanName != null) {
+                    variants.add(LookupElementBuilder.create(beanName).
+                            withIcon(IoIcons.FILE).
+                            withTypeText(beanName.getContainingFile().getName())
+                    );
+                }
+            }
+            IoEnum ioEnum = entity.getEnum();
+            if (ioEnum == null) {
+                IoEnumName enumName = ioEnum.getEnumName();
+                if (enumName != null) {
+                    variants.add(LookupElementBuilder.create(enumName).
+                            withIcon(IoIcons.FILE).
+                            withTypeText(enumName.getContainingFile().getName())
+                    );
+                }
+            }
         }
         return variants.toArray();
+    }
+
+    @Override
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
+
+        if (myElement instanceof PsiNamedElement) {
+            ((PsiNamedElement) myElement).setName(newElementName);
+        }
+        return myElement;
     }
 }

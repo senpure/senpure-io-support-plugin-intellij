@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
 import com.senpure.io.support.plugin.intellij.psi.*;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiReference;
 
 public class IoBeanNameImpl extends IoNamedElementImpl implements IoBeanName {
 
@@ -44,6 +45,11 @@ public class IoBeanNameImpl extends IoNamedElementImpl implements IoBeanName {
   @Override
   public ItemPresentation getPresentation() {
     return IoPsiImplUtil.getPresentation(this);
+  }
+
+  @Override
+  public PsiReference[] getReferences() {
+    return IoPsiImplUtil.getReferences(this);
   }
 
 }

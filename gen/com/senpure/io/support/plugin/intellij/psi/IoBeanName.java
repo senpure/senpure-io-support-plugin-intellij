@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiReference;
 
 public interface IoBeanName extends IoNamedElement {
 
@@ -15,5 +16,8 @@ public interface IoBeanName extends IoNamedElement {
   PsiElement getNameIdentifier();
 
   ItemPresentation getPresentation();
+
+  @NotNull
+  PsiReference[] getReferences();
 
 }

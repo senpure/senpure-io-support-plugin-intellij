@@ -62,7 +62,62 @@ public class IoBlock extends AbstractBlock {
 
     @Nullable
     private SpacingBuilder computeSpacingBuilder() {
-        SpacingBuilder spacingBuilder = IoFormattingModelBuilder.normalSpacingBuilder;
+        SpacingBuilder spacingBuilder = null;
+
+
+        if (myNode.getElementType().equals(IoTypes.FIELD)) {
+            ASTNode entity = myNode.getTreeParent();
+            ASTNode[] astNodes = entity.getChildren(field);
+            IoField myField = (IoField) myNode.getPsi();
+            FieldModel maxModel = new FieldModel();
+            FieldModel myModel = null;
+            for (ASTNode astNode : astNodes) {
+                IoField ioField = (IoField) astNode.getPsi();
+                FieldModel tempModel = new FieldModel();
+                int fieldTypeLen = ioField.getFieldType().getTextLength();
+                tempModel.fieldTypeLen = fieldTypeLen;
+                tempModel.fieldTypeAndList = fieldTypeLen;
+                if (fieldTypeLen > maxModel.fieldTypeLen) {
+                    maxModel.fieldTypeLen = fieldTypeLen;
+                }
+                boolean list = ioField.getFieldList() != null;
+                tempModel.list = list;
+                if (list) {
+                    maxModel.list = true;
+                }
+                if (tempModel.fieldTypeAndList > maxModel.fieldTypeAndList) {
+                    maxModel.fieldTypeAndList = tempModel.fieldTypeAndList;
+                }
+                int fieldNameLen = ioField.getFieldName().getTextLength();
+                tempModel.fieldNameLen = fieldNameLen;
+                if (fieldNameLen > maxModel.fieldNameLen) {
+                    maxModel.fieldNameLen = fieldNameLen;
+                }
+                IoFieldIndex fieldIndex = ioField.getFieldIndex();
+                if (fieldIndex != null) {
+                    maxModel.index = true;
+                    tempModel.index = true;
+                    int fieldIndexLen = fieldIndex.getTextLength();
+                    tempModel.indexValueLen = fieldIndexLen;
+                    if (fieldIndexLen > maxModel.indexValueLen) {
+                        maxModel.indexValueLen = fieldIndexLen;
+                    }
+                }
+                if (myField == ioField) {
+                    myModel = tempModel;
+                }
+                //IoField ioField = (IoField) astNode.getElementType();
+            }
+
+            spacingBuilder = spacingBuilder(maxModel, myModel);
+
+        } else if (myNode.getElementType().equals(IoTypes.ENUM_FIELD)) {
+            spacingBuilder = enumFieldSpacingBuilder();
+
+        }
+        if (spacingBuilder == null) {
+            spacingBuilder = IoFormattingModelBuilder.normalSpacingBuilder;
+        }
         return spacingBuilder;
     }
 
@@ -129,71 +184,6 @@ public class IoBlock extends AbstractBlock {
     @Override
     public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
         Spacing spacing = spacingBuilder.getSpacing(this, child1, child2);
-        if (spacing == null) {
-            if (myNode.getElementType().equals(IoTypes.FIELD)) {
-                ASTNode entity = myNode.getTreeParent();
-                ASTNode[] astNodes = entity.getChildren(field);
-                IoField myField = (IoField) myNode.getPsi();
-                FieldModel maxModel = new FieldModel();
-                FieldModel myModel = null;
-                for (ASTNode astNode : astNodes) {
-                    IoField ioField = (IoField) astNode.getPsi();
-                    FieldModel tempModel = new FieldModel();
-                    int fieldTypeLen = ioField.getFieldType().getTextLength();
-                    tempModel.fieldTypeLen = fieldTypeLen;
-                    tempModel.fieldTypeAndList = fieldTypeLen;
-                    if (fieldTypeLen > maxModel.fieldTypeLen) {
-                        maxModel.fieldTypeLen = fieldTypeLen;
-                    }
-                    boolean list = ioField.getFieldList() != null;
-                    tempModel.list = list;
-                    if (list) {
-                        maxModel.list = true;
-                    }
-                    if (tempModel.fieldTypeAndList > maxModel.fieldTypeAndList) {
-                        maxModel.fieldTypeAndList = tempModel.fieldTypeAndList;
-                    }
-                    int fieldNameLen = ioField.getFieldName().getTextLength();
-                    tempModel.fieldNameLen = fieldNameLen;
-                    if (fieldNameLen > maxModel.fieldNameLen) {
-                        maxModel.fieldNameLen = fieldNameLen;
-                    }
-                    IoFieldIndex fieldIndex = ioField.getFieldIndex();
-                    if (fieldIndex != null) {
-                        maxModel.index = true;
-                        tempModel.index = true;
-                        int fieldIndexLen = fieldIndex.getTextLength();
-                        tempModel.indexValueLen = fieldIndexLen;
-                        if (fieldIndexLen > maxModel.indexValueLen) {
-                            maxModel.indexValueLen = fieldIndexLen;
-                        }
-                    }
-                    if (myField == ioField) {
-                        myModel = tempModel;
-                    }
-                    //IoField ioField = (IoField) astNode.getElementType();
-                }
-
-                SpacingBuilder spacingBuilder = spacingBuilder(maxModel, myModel);
-                return spacingBuilder.getSpacing(this, child1, child2);
-            } else if (myNode.getElementType().equals(IoTypes.ENUM_FIELD)) {
-                SpacingBuilder spacingBuilder = enumFieldSpacingBuilder();
-                return spacingBuilder.getSpacing(this, child1, child2);
-            } else if (myNode.getElementType().equals(IoTypes.HEAD_CONTENT)) {
-                //  System.out.println("space head " + myNode.getText() + "  ===" + myNode.getElementType());
-
-            } else {
-                // System.out.println("---------spacing null " + myNode.getText()+"===="+myNode.getElementType());
-            }
-
-            //  System.out.println("null space ...."+myNode.getText()+" ===c1"+child1+" __ c2"+child2+"..."+myNode.getElementType());
-        } else {
-//            if (myNode.getText().startsWith("namespace")) {
-//                System.out.println("---------spacing head " + myNode.getText() + "  ====" + myNode.getElementType());
-//            }
-            // System.out.println("yes  space ...."+myNode.getText()+" ==="+child1+" __ "+child2+"..."+myNode.getElementType());
-        }
-        //System.out.println("yes  space ...." + myNode.getText() + " ===" + child1 + " __ " + child2 + "..." + myNode.getElementType());
         return spacing;
     }
 

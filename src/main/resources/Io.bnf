@@ -28,7 +28,7 @@ tokens=[
     T_FIELD_TYPE_BASE="regexp:int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|String|string"
     T_IDENTIFIER="regexp:[a-zA-Z][a-zA-Z0-9_]*"
     T_LINE_COMMENT="regexp://[^\r\n]*"
-
+    T_CODE_COMMENT="regexp:#[^\r\n]*"
   ]
 }
 
@@ -49,6 +49,11 @@ entityComment::=T_LINE_COMMENT
 messageHead::=T_MESSAGE_HEAD
 messageType::=(T_MESSAGE_TYPE_CS|T_MESSAGE_TYPE_SC)
 messageName::=T_MESSAGE_NAME
+{
+  mixin="com.senpure.io.support.plugin.intellij.psi.impl.IoNamedElementImpl"
+  implements="com.senpure.io.support.plugin.intellij.psi.IoNamedElement"
+  methods=[getName setName getNameIdentifier getPresentation getReferences]
+}
 messageId::=T_MESSAGE_ID
 leftBrace::=T_LEFT_BRACE
 rightBrace::=T_RIGHT_BRACE
@@ -75,7 +80,7 @@ beanName::=T_BEAN_NAME
 {
   mixin="com.senpure.io.support.plugin.intellij.psi.impl.IoNamedElementImpl"
   implements="com.senpure.io.support.plugin.intellij.psi.IoNamedElement"
- methods=[getName setName getNameIdentifier getPresentation]
+ methods=[getName setName getNameIdentifier getPresentation getReferences]
 }
 
 event::= entityComment*
@@ -84,6 +89,11 @@ event::= entityComment*
           rightBrace
 eventHead ::=T_EVENT_HEAD
 eventName ::=T_EVENT_NAME
+{
+  mixin="com.senpure.io.support.plugin.intellij.psi.impl.IoNamedElementImpl"
+  implements="com.senpure.io.support.plugin.intellij.psi.IoNamedElement"
+ methods=[getName setName getNameIdentifier getPresentation getReferences]
+}
 eventId ::=T_EVENT_ID
  //至少需要两个状态才有必要定义枚举,强制第一个位默认值
 enum::=entityComment*
@@ -93,6 +103,11 @@ enum::=entityComment*
           rightBrace
 enumHead::=T_ENUM_HEAD
 enumName::=T_ENUM_NAME
+{
+  mixin="com.senpure.io.support.plugin.intellij.psi.impl.IoNamedElementImpl"
+  implements="com.senpure.io.support.plugin.intellij.psi.IoNamedElement"
+ methods=[getName setName getNameIdentifier getPresentation getReferences]
+}
 enumField::=fieldName(equal fieldIndex)? semicolon fieldComment?
 
 namespace::=namespaceHead namespaceValue semicolon

@@ -42,6 +42,7 @@ public class IoColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("IO_LEFT_BRACE", IoSyntaxHighlighter.LEFT_BRACE),
             new AttributesDescriptor("IO_LEFT_BRACKET", IoSyntaxHighlighter.LEFT_BRACKET),
             new AttributesDescriptor("IO_LINE_COMMENT", IoSyntaxHighlighter.LINE_COMMENT),
+            new AttributesDescriptor("IO_CODE_COMMENT", IoSyntaxHighlighter.CODE_COMMENT),
             new AttributesDescriptor("IO_MESSAGE_HEAD", IoSyntaxHighlighter.MESSAGE_HEAD),
             new AttributesDescriptor("IO_MESSAGE_ID", IoSyntaxHighlighter.MESSAGE_ID),
             new AttributesDescriptor("IO_MESSAGE_NAME", IoSyntaxHighlighter.MESSAGE_NAME),
@@ -58,7 +59,7 @@ public class IoColorSettingsPage implements ColorSettingsPage {
     @Nullable
     @Override
     public Icon getIcon() {
-        return IoFileType.FILE;
+        return IoIcons.FILE;
     }
 
     @NotNull

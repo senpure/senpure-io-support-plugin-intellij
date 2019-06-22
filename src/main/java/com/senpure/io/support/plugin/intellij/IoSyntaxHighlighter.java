@@ -46,6 +46,7 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey LEFT_BRACE = createTextAttributesKey("IO_LEFT_BRACE");
     public static final TextAttributesKey LEFT_BRACKET = createTextAttributesKey("IO_LEFT_BRACKET");
     public static final TextAttributesKey LINE_COMMENT = createTextAttributesKey("IO_LINE_COMMENT");
+    public static final TextAttributesKey CODE_COMMENT = createTextAttributesKey("IO_CODE_COMMENT");
     public static final TextAttributesKey MESSAGE_HEAD = createTextAttributesKey("IO_MESSAGE_HEAD");
     public static final TextAttributesKey MESSAGE_ID = createTextAttributesKey("IO_MESSAGE_ID");
     public static final TextAttributesKey MESSAGE_NAME = createTextAttributesKey("IO_MESSAGE_NAME");
@@ -78,6 +79,7 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] LEFT_BRACE_KEYS = new TextAttributesKey[]{ LEFT_BRACE };
     private static final TextAttributesKey[] LEFT_BRACKET_KEYS = new TextAttributesKey[]{ LEFT_BRACKET };
     private static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{ LINE_COMMENT };
+    private static final TextAttributesKey[] CODE_COMMENT_KEYS = new TextAttributesKey[]{ CODE_COMMENT };
     private static final TextAttributesKey[] MESSAGE_HEAD_KEYS = new TextAttributesKey[]{ MESSAGE_HEAD };
     private static final TextAttributesKey[] MESSAGE_ID_KEYS = new TextAttributesKey[]{ MESSAGE_ID };
     private static final TextAttributesKey[] MESSAGE_NAME_KEYS = new TextAttributesKey[]{ MESSAGE_NAME };
@@ -170,6 +172,9 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
         }
         else if (tokenType.equals(IoTypes.T_LINE_COMMENT)) {
             return LINE_COMMENT_KEYS;
+        }
+        else if (tokenType.equals(IoTypes.T_CODE_COMMENT)) {
+            return CODE_COMMENT_KEYS;
         }
         else if (tokenType.equals(IoTypes.T_MESSAGE_HEAD)) {
             return MESSAGE_HEAD_KEYS;

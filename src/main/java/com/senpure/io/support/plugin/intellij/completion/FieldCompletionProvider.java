@@ -12,8 +12,7 @@ import com.senpure.base.util.StringUtil;
 import com.senpure.io.generator.model.Bean;
 import com.senpure.io.generator.reader.IoProtocolReader;
 import com.senpure.io.generator.reader.IoReader;
-import com.senpure.io.support.plugin.intellij.IoCompletionContributor;
-import com.senpure.io.support.plugin.intellij.IoFileType;
+import com.senpure.io.support.plugin.intellij.IoIcons;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +61,7 @@ public class FieldCompletionProvider extends CompletionProvider {
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
 
 
-        IElementType elementType = IoCompletionContributor.preElementType(parameters.getPosition().getNode());
+        IElementType elementType = IoUtil.preEffectiveElementType(parameters.getPosition().getNode());
         if (elementType != null) {
             if (elementType.equals(IoTypes.T_LEFT_BRACE)
                     || elementType.equals(IoTypes.T_SEMICOLON)
@@ -74,7 +73,7 @@ public class FieldCompletionProvider extends CompletionProvider {
                     result.addElement(LookupElementBuilder.create(bean.getName())
                             .withTailText(" (" + bean.getNamespace() + ")", true)
 
-                            .withIcon(IoFileType.FILE)
+                            .withIcon(IoIcons.FILE)
                     );
                 }
 
@@ -89,14 +88,14 @@ public class FieldCompletionProvider extends CompletionProvider {
         @Override
         protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
             String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
-            ASTNode pre = IoUtil.preNode(parameters.getPosition().getNode());
+            ASTNode pre = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
             boolean base = true;
             if (pre != null) {
 
                 boolean list = false;
                 if (pre.getElementType().equals(IoTypes.T_RIGHT_BRACKET)) {
                     list = true;
-                    pre = IoUtil.preNode(pre, 2);
+                    pre = IoUtil.preEffectiveNode(pre, 2);
                 }
                 if (pre != null) {
                     if (pre.getElementType().equals(IoTypes.T_FIELD_TYPE_QUOTE)) {
@@ -108,41 +107,49 @@ public class FieldCompletionProvider extends CompletionProvider {
                             name = nameRule(name);
                             names.add(name);
                             names.add(nameRule(pre.getText() + "List"));
+                            if (text.length() > 0) {
+                                String t=text.toLowerCase();
+                                String t2=pre.getText().toLowerCase();
+                                if (!t2.startsWith(t)) {
+                                    names.add(text + pre.getText());
+                                    names.add(text + pre.getText()+ "List");
+                                }
+                            }
                             // names.add(nameRule(pre.getText() + "Array"));
                         } else {
                             String name = nameRule(pre.getText());
                             names.add(nameRule(name));
                         }
-
-
                         for (String name : names) {
                             result.addElement(LookupElementBuilder.create(name));
+                        }
+                     //   IElementType nextType = IoUtil.nexEffectiveElementType(parameters.getPosition().getNode());
 
-                        }
-                        for (String name : names) {
-                            result.addElement(LookupElementBuilder.create(name + ";")
-                                    .withBoldness(true)
-                                    .withTailText(" (补全分号) ", true)
-                                    .withInsertHandler((context1, item) -> {
-                                        parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 1 + name.length() - text.length());
-                                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                                        processor.runWithoutProgress();
-                                        parameters.getEditor().getSelectionModel().removeSelection();
-                                    })
-                            );
-                            result.addElement(LookupElementBuilder.create(name + ";//")
-                                    .withBoldness(true)
-                                    .withTailText(" (补全分号,添加注释) ", true)
-                                    .withInsertHandler((context1, item) -> {
-                                        parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 3 + name.length() - text.length());
-                                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                                        processor.runWithoutProgress();
-                                        parameters.getEditor().getSelectionModel().removeSelection();
-                                    })
-                            );
-                        }
+                            for (String name : names) {
+                                result.addElement(LookupElementBuilder.create(name + ";")
+                                        .withBoldness(true)
+                                        .withTailText(" (补全分号) ", true)
+                                        .withInsertHandler((context1, item) -> {
+                                            parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 1 + name.length() - text.length());
+                                            parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                                            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                                            processor.runWithoutProgress();
+                                            parameters.getEditor().getSelectionModel().removeSelection();
+                                        })
+                                );
+                                result.addElement(LookupElementBuilder.create(name + ";//")
+                                        .withBoldness(true)
+                                        .withTailText(" (补全分号,添加注释) ", true)
+                                        .withInsertHandler((context1, item) -> {
+                                            parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 3 + name.length() - text.length());
+                                            parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                                            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                                            processor.runWithoutProgress();
+                                            parameters.getEditor().getSelectionModel().removeSelection();
+                                        })
+                                );
+                            }
+
                     }
                 }
 

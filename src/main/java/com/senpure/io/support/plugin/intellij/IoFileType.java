@@ -1,7 +1,6 @@
 package com.senpure.io.support.plugin.intellij;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +13,7 @@ import javax.swing.*;
  * @time 2019-05-21 19:57:12
  */
 public class IoFileType extends LanguageFileType {
-    public static final Icon FILE = IconLoader.getIcon("/icon.png");
+
     public static final IoFileType INSTANCE = new IoFileType();
     private IoFileType() {
         super(IoLanguage.INSTANCE);
@@ -42,11 +41,11 @@ public class IoFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return FILE;
+        return IoIcons.FILE;
     }
 
     public static void main(String[] args) {
 
-        System.out.println(FILE);
+
     }
 }

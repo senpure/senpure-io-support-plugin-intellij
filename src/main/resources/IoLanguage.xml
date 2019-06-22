@@ -110,6 +110,11 @@
             <option name="FOREGROUND" value="#629755"/>
         </value>
     </option>
+    <option name="IO_CODE_COMMENT">
+        <value>
+            <option name="FOREGROUND" value="#629755"/>
+        </value>
+    </option>
     <option name="IO_MESSAGE_HEAD">
         <value>
             <option name="FOREGROUND" value="#cc7832"/>

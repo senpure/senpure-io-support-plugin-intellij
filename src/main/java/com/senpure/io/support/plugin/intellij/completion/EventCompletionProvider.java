@@ -11,7 +11,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
 import com.senpure.io.generator.model.Bean;
-import com.senpure.io.generator.model.Message;
+import com.senpure.io.generator.model.Event;
 import com.senpure.io.generator.reader.IoProtocolReader;
 import com.senpure.io.generator.reader.IoReader;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,47 +30,36 @@ import java.util.Objects;
  * @author senpure
  * @time 2019-05-31 17:13:38
  */
-public class MessageCompletionProvider extends CompletionProvider {
+public class EventCompletionProvider extends CompletionProvider {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public static void reg(CompletionContributor contributor) {
 
-        contributor.extend(CompletionType.BASIC, PlatformPatterns.psiElement(IoTypes.T_MESSAGE_NAME), new MessageCompletionProvider());
+        contributor.extend(CompletionType.BASIC, PlatformPatterns.psiElement(IoTypes.T_EVENT_NAME), new EventCompletionProvider());
 
     }
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-        boolean messageType = false;
-        boolean messageName = false;
-        boolean messageId = false;
+
+        boolean eventName = false;
+        boolean eventId = false;
         boolean brace = false;
-        ASTNode preNode = null;
+        ASTNode preNode;
         PsiElement parent = parameters.getPosition().getParent();
         if (parent instanceof PsiErrorElement) {
             IElementType preType;
             preNode = IoUtil.preEffectiveNode(parent.getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
-                //不判断后面是否有该元素了
-//                ASTNode nextNode = IoUtil.nexEffectiveNode(parent.getNode());
-//                if (nextNode != null && GeneratedParserUtilBase.DUMMY_BLOCK.equals(nextNode.getElementType())) {
-//                    nextNode = IoUtil.childEffectiveNode(nextNode);
-//
-//                }
-                if (preType.equals(IoTypes.T_MESSAGE_HEAD)
-//                        && (nextNode == null || (!nextNode.getElementType()
-//                        .equals(IoTypes.T_MESSAGE_TYPE_CS) && !nextNode.getElementType()
-//                        .equals(IoTypes.T_MESSAGE_TYPE_SC)))
-                ) {
-                    messageType = true;
-                } else if (preType.equals(IoTypes.T_MESSAGE_NAME)
+
+              if (preType.equals(IoTypes.T_EVENT_NAME)
                         && parent.getNode().getTreePrev().getElementType().equals(TokenType.WHITE_SPACE)
                     // && (nextNode == null || nextNode.getElementType().equals(IoTypes.T_MESSAGE_ID))
                 ) {
-                    messageId = true;
-                } else if (preType.equals(IoTypes.T_MESSAGE_ID)) {
+                    eventId = true;
+                } else if (preType.equals(IoTypes.T_EVENT_ID)) {
                     brace = true;
                 }
             }
@@ -80,26 +68,20 @@ public class MessageCompletionProvider extends CompletionProvider {
             preNode = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
-               // logger.debug("{} {}",preType);
-                if (preType.equals(IoTypes.T_MESSAGE_TYPE_SC)
-                        || preType.equals(IoTypes.T_MESSAGE_TYPE_CS)) {
-                    messageName = true;
+                if (preType.equals(IoTypes.T_ENUM_HEAD)) {
+                    eventName = true;
                 }
             }
         }
-        if (messageType) {
-            messageType(result);
-        } else if (messageName) {
-            messageName(parameters, result);
-        } else if (messageId) {
-            messageId(parameters, result);
+       if (eventName) {
+            eventName(parameters, result);
+        } else if (eventId) {
+            eventId(parameters, result);
         } else if (brace) {
             brace(parameters, result);
         }
-        // return;
 
-        // result.addElement(LookupElementBuilder.create("CS"));
-        // result.addElement(LookupElementBuilder.create("SC"));
+
     }
 
     public void messageType(@NotNull CompletionResultSet result) {
@@ -107,64 +89,40 @@ public class MessageCompletionProvider extends CompletionProvider {
         result.addElement(LookupElementBuilder.create("SC"));
     }
 
-    public void messageName(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-
+    public void eventName(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());
-        List<Message> messages = reader.getMessages();
-        List<Message> singles = new ArrayList<>();
-        for (int i = 0; i < messages.size() - 1; i++) {
-            Message message = messages.get(i);
-            boolean single = true;
-            for (int j = 0; j < messages.size(); j++) {
-                Message temp = messages.get(j);
-                if (Objects.equals(message.getName(), temp.getName())) {
-                    single = false;
+        List<Event> events = reader.getEvents();
+            for (Bean bean : reader.getBeans()) {
+                boolean add = true;
+                for (Event event : events) {
+                    if (Objects.equals(bean.getName(), event.getName())) {
+                        add=false;
+                        break;
+                    }
+                }
+                if (add) {
+                    result.addElement(LookupElementBuilder.create(bean.getName()));
                 }
             }
-            if (single) {
-                singles.add(message);
-            }
-        }
-        PsiElement parent = parameters.getPosition().getParent();
-        ASTNode typeNode = IoUtil.preEffectiveNode(parent.getNode());
-        String type = "CS";
-        if (typeNode != null) {
-            type = typeNode.getText();
-        }
-        for (Message single : singles) {
-            if (!single.getType().equalsIgnoreCase(type)) {
-                result.addElement(LookupElementBuilder.create(single.getName()));
-            }
-        }
-        if (singles.size() == 0) {
-            for (Bean bean : reader.getBeans()) {
-                result.addElement(LookupElementBuilder.create(bean.getName()));
-            }
-        }
-    }
 
-    public void messageId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+    }
+    public void eventId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement parent = parameters.getPosition().getParent();
         ASTNode preNode = IoUtil.preEffectiveNode(parent.getNode());
-        ASTNode typeNode = IoUtil.preEffectiveNode(preNode);
-        String type = "CS";
-        if (typeNode != null) {
-            type = typeNode.getText();
-        }
-        Integer messageId = IoUtil.getAutoMessageId(IoUtil.getFileNamespace(parameters.
+
+        Integer eventId = IoUtil.getAutoEventId(IoUtil.getFileNamespace(parameters.
                 getOriginalFile()
                 .getVirtualFile()
-                .getPath()), type, preNode.getText());
-        result.addElement(LookupElementBuilder.create(messageId));
-
-        result.addElement(LookupElementBuilder.create(messageId+" {\n}")
+                .getPath()), preNode.getText());
+        result.addElement(LookupElementBuilder.create(eventId));
+        result.addElement(LookupElementBuilder.create(eventId+" {\n}")
                 .withBoldness(true)
                 .withTailText(" (补全括号) ", true)
                 .withInsertHandler((context, item) -> {
-                    parameters.getEditor().getCaretModel().moveToOffset((messageId+"").length()+parameters.getOffset() + 2);
+                    parameters.getEditor().getCaretModel().moveToOffset((eventId+"").length()+parameters.getOffset() + 2);
                     parameters.getEditor().getSelectionModel().selectLineAtCaret();
                     ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
                     processor.runWithoutProgress();
