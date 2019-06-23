@@ -33,7 +33,7 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        List<IoNamedElement> namedElements = IoUtil.findEntities(project, name);
+        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(project, name);
         List<ResolveResult> results = new ArrayList<>();
 
         for (IoNamedElement namedElement : namedElements) {

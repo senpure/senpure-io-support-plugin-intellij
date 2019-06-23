@@ -188,7 +188,6 @@ public class IoBlock extends AbstractBlock {
     }
 
     private SpacingBuilder enumFieldSpacingBuilder() {
-        // PsiUtilCore.getElementType(myNode);
         ASTNode entity = myNode.getTreeParent();
         ASTNode[] astNodes = entity.getChildren(enumField);
         IoEnumField myField = (IoEnumField) myNode.getPsi();
@@ -220,7 +219,6 @@ public class IoBlock extends AbstractBlock {
         //抵消一个空格
         maxModel.fieldTypeLen = -1;
         myModel.fieldTypeLen = -1;
-
         return spacingBuilder(maxModel, myModel);
     }
 

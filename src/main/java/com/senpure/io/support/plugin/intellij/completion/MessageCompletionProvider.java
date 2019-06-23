@@ -80,7 +80,7 @@ public class MessageCompletionProvider extends CompletionProvider {
             preNode = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
-               // logger.debug("{} {}",preType);
+                // logger.debug("{} {}",preType);
                 if (preType.equals(IoTypes.T_MESSAGE_TYPE_SC)
                         || preType.equals(IoTypes.T_MESSAGE_TYPE_CS)) {
                     messageName = true;
@@ -119,9 +119,13 @@ public class MessageCompletionProvider extends CompletionProvider {
             Message message = messages.get(i);
             boolean single = true;
             for (int j = 0; j < messages.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
                 Message temp = messages.get(j);
                 if (Objects.equals(message.getName(), temp.getName())) {
                     single = false;
+                    break;
                 }
             }
             if (single) {
@@ -139,11 +143,21 @@ public class MessageCompletionProvider extends CompletionProvider {
                 result.addElement(LookupElementBuilder.create(single.getName()));
             }
         }
-        if (singles.size() == 0) {
-            for (Bean bean : reader.getBeans()) {
+//        if (singles.size() == 0) {
+//        }
+        for (Bean bean : reader.getBeans()) {
+            boolean not = true;
+            for (Message message : messages) {
+                if (Objects.equals(bean.getName(), message.getName())) {
+                    not = false;
+                    break;
+                }
+            }
+            if (not) {
                 result.addElement(LookupElementBuilder.create(bean.getName()));
             }
         }
+
     }
 
     public void messageId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
@@ -160,11 +174,11 @@ public class MessageCompletionProvider extends CompletionProvider {
                 .getPath()), type, preNode.getText());
         result.addElement(LookupElementBuilder.create(messageId));
 
-        result.addElement(LookupElementBuilder.create(messageId+" {\n}")
+        result.addElement(LookupElementBuilder.create(messageId + " {\n}")
                 .withBoldness(true)
                 .withTailText(" (补全括号) ", true)
                 .withInsertHandler((context, item) -> {
-                    parameters.getEditor().getCaretModel().moveToOffset((messageId+"").length()+parameters.getOffset() + 2);
+                    parameters.getEditor().getCaretModel().moveToOffset((messageId + "").length() + parameters.getOffset() + 2);
                     parameters.getEditor().getSelectionModel().selectLineAtCaret();
                     ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
                     processor.runWithoutProgress();

@@ -91,7 +91,7 @@ public class IoUtil {
             int temp = (int) Math.pow(10, str.length() - 1);
             id = maxId  / temp * temp;
         }
-        if (id< 10) {
+        if (id< 10000) {
             id= 10000;
         }
         return id;
@@ -325,7 +325,7 @@ public class IoUtil {
         return results;
     }
 
-    public static List<IoNamedElement> findEntities(Project project, String name) {
+    public static List<IoNamedElement> findBeansOrEnums(Project project, String name) {
         List<IoNamedElement> results = new ArrayList<>();
 
         Collection<VirtualFile> virtualFiles =
@@ -346,16 +346,16 @@ public class IoUtil {
                             if (Objects.equals(bean.getBeanName().getText(), name))
                                 results.add(bean.getBeanName());
                         }
-                        IoMessage message = ioEntity.getMessage();
-                        if (message != null && message.getMessageName() != null) {
-                            if (Objects.equals(message.getMessageName().getText(), name))
-                                results.add(message.getMessageName());
-                        }
-                        IoEvent event = ioEntity.getEvent();
-                        if (event != null && event.getEventName() != null) {
-                            if (Objects.equals(event.getEventName().getText(), name))
-                                results.add(event.getEventName());
-                        }
+//                        IoMessage message = ioEntity.getMessage();
+//                        if (message != null && message.getMessageName() != null) {
+//                            if (Objects.equals(message.getMessageName().getText(), name))
+//                                results.add(message.getMessageName());
+//                        }
+//                        IoEvent event = ioEntity.getEvent();
+//                        if (event != null && event.getEventName() != null) {
+//                            if (Objects.equals(event.getEventName().getText(), name))
+//                                results.add(event.getEventName());
+//                        }
 
                     }
                 }

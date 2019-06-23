@@ -3,6 +3,7 @@ package com.senpure.io.support.plugin.intellij.component;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.senpure.io.antlr.IoParser;
+import com.senpure.io.generator.model.Event;
 import com.senpure.io.generator.model.Message;
 import com.senpure.io.generator.reader.IoErrorListener;
 import com.senpure.io.generator.reader.IoProtocolReader;
@@ -69,6 +70,9 @@ public class IoVirtualFileReader extends IoProtocolReader {
 
             for (Message message : getMessages()) {
                 IoUtil.setMessageId(message.getNamespace(),message.getType(),message.getName(),message.getId());
+            }
+            for (Event event : getEvents()) {
+                IoUtil.setEventId(event.getNamespace(), event.getName(), event.getId());
             }
         }
     }

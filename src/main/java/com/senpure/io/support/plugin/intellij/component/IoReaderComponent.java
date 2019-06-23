@@ -36,12 +36,12 @@ public class IoReaderComponent implements ProjectComponent {
         LocalFileSystem.getInstance().addVirtualFileListener(new VirtualFileContentsChangedAdapter() {
             @Override
             protected void onFileChange(@NotNull VirtualFile fileOrDirectory) {
-
-                logger.debug("文件改变 {}", fileOrDirectory.getUrl());
                 if (Objects.equals("io", fileOrDirectory.getExtension())) {
+                    logger.debug("文件改变 {}", fileOrDirectory.getUrl());
                     IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
                     ioVirtualFileReader.read(fileOrDirectory, IoReader.getInstance().getIoProtocolReaderMap());
                     if (!ioVirtualFileReader.isHasError()) {
+                        logger.debug("替换 {}", fileOrDirectory.getPath());
                         IoReader.getInstance().replace(fileOrDirectory.getPath(), ioVirtualFileReader);
                     }
                 }
@@ -54,8 +54,9 @@ public class IoReaderComponent implements ProjectComponent {
 
             @Override
             public void fileCopied(@NotNull VirtualFileCopyEvent event) {
-                logger.debug("文件复制 {}", event.getFile());
+
                 if (Objects.equals("io", event.getFile().getExtension())) {
+                    logger.debug("文件复制 {}", event.getFile());
                     IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
                     ioVirtualFileReader.read(event.getFile(), IoReader.getInstance().getIoProtocolReaderMap());
                     if (!ioVirtualFileReader.isHasError()) {
@@ -67,7 +68,10 @@ public class IoReaderComponent implements ProjectComponent {
             @Override
             public void fileDeleted(@NotNull VirtualFileEvent event) {
                 logger.debug("文件删除 {}", event.getFile());
-                IoReader.getInstance().getIoProtocolReaderMap().remove(event.getFile().getPath());
+                if (Objects.equals("io", event.getFile().getExtension())) {
+                    IoReader.getInstance().getIoProtocolReaderMap().remove(event.getFile().getPath());
+                }
+
             }
         });
         List<VirtualFile> list = new ArrayList<>(16);

@@ -27,7 +27,13 @@ tasks.withType(JavaCompile) {
 def senpureVersion = '1.0-SNAPSHOT'
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'com.senpure', name: 'senpure-io-generator', version: "$senpureVersion"
+    compile (group: 'com.senpure', name: 'senpure-io-generator', version: "$senpureVersion")
+    {
+        exclude (group: 'de.roskenet' )
+        exclude (group: 'org.freemarker' )
+        exclude (group: 'io.netty' )
+        exclude (group: 'com.fasterxml.jackson.core' )
+    }
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

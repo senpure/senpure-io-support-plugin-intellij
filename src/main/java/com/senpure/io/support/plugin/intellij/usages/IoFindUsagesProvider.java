@@ -53,7 +53,8 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
         if (element instanceof IoFieldType) {
             // IoFieldName fieldName = (IoFieldName) element;
             return "fieldType";
-        } else {
+        }
+        else {
             return "bean NameL";
         }
 

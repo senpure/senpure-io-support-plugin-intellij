@@ -107,12 +107,12 @@
     </option>
     <option name="IO_LINE_COMMENT">
         <value>
-            <option name="FOREGROUND" value="#629755"/>
+            <option name="FOREGROUND" value="#808080"/>
         </value>
     </option>
     <option name="IO_CODE_COMMENT">
         <value>
-            <option name="FOREGROUND" value="#629755"/>
+            <option name="FOREGROUND" value="#808080"/>
         </value>
     </option>
     <option name="IO_MESSAGE_HEAD">

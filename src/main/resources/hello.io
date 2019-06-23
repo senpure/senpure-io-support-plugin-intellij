@@ -17,6 +17,7 @@ bean Student {
     Student s;                          //
 }
 
+
 enum Sexy {
     s;
     X = 1;
