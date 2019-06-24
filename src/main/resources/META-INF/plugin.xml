@@ -38,7 +38,9 @@
         <colorSettingsPage implementation="com.senpure.io.support.plugin.intellij.IoColorSettingsPage"/>
 
         <annotator language="Io" implementationClass="com.senpure.io.support.plugin.intellij.IoAnnotator"/>
+        <additionalTextAttributes scheme="Default" file="IoLanguage.xml"/>
         <additionalTextAttributes scheme="Darcula" file="IoLanguage.xml"/>
+
         <completion.contributor language="Io"
                                 implementationClass="com.senpure.io.support.plugin.intellij.IoCompletionContributor"/>
         <lang.formatter language="Io"

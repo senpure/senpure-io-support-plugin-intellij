@@ -6,10 +6,7 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import com.senpure.io.support.plugin.intellij.IoLexerAdapter;
-import com.senpure.io.support.plugin.intellij.psi.IoBean;
-import com.senpure.io.support.plugin.intellij.psi.IoEnum;
-import com.senpure.io.support.plugin.intellij.psi.IoFieldType;
-import com.senpure.io.support.plugin.intellij.psi.IoTypes;
+import com.senpure.io.support.plugin.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,10 +34,10 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
 
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-        //  logger.debug("canFindUsagesFor: {} -> {}", psiElement, psiElement.getText());
-        if (psiElement instanceof IoEnum) {
+       // logger.debug("canFindUsagesFor: {} -> {}", psiElement, psiElement.getText());
+        if (psiElement instanceof IoBeanName) {
             return true;
-        } else if (psiElement instanceof IoBean) {
+        } else if (psiElement instanceof IoEnumName) {
             return true;
         }
         return false;
