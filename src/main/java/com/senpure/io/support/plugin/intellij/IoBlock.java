@@ -32,7 +32,8 @@ public class IoBlock extends AbstractBlock {
     private Indent indent;
     private Indent childIndent;
     private CodeStyleSettings settings;
-    private static TokenSet ENTITY = TokenSet.create(IoTypes.MESSAGE);
+    private static TokenSet ENTITY = TokenSet.create(IoTypes.MESSAGE, IoTypes.BEAN, IoTypes.ENUM, IoTypes.EVENT);
+    private static TokenSet FIELD = TokenSet.create(IoTypes.FIELD, IoTypes.ENUM_FIELD);
     private static TokenSet HEAD = TokenSet.create(IoTypes.HEAD_CONTENT, IoTypes.NAMESPACE, IoTypes.IMPORT, IoTypes.JAVA_PACK);
 
     protected IoBlock(@NotNull ASTNode node, @Nullable Wrap wrap, CodeStyleSettings settings, SpacingBuilder spacingBuilder) {
@@ -48,22 +49,9 @@ public class IoBlock extends AbstractBlock {
     private static Alignment fieldAlignment = Alignment.createAlignment(true);
     private static Alignment enumFieldAlignment = Alignment.createAlignment(true);
 
-    private IElementType next(ASTNode node) {
-        ASTNode astNode = node.getTreeNext();
-        if (astNode == null) {
-            return null;
-        }
-        IElementType type = astNode.getElementType();
-        if (type.equals(TokenType.WHITE_SPACE)) {
-            return next(astNode);
-        }
-        return type;
-    }
-
     @Nullable
     private SpacingBuilder computeSpacingBuilder() {
         SpacingBuilder spacingBuilder = null;
-
 
         if (myNode.getElementType().equals(IoTypes.FIELD)) {
             ASTNode entity = myNode.getTreeParent();
@@ -134,13 +122,12 @@ public class IoBlock extends AbstractBlock {
 
     private static Indent computeChildIndent(ASTNode node) {
         IElementType type = node.getElementType();
-        IElementType parent = node.getElementType();
+      //  IElementType parent = node.getElementType();
         if (ENTITY.contains(type)) {
             return DIRECT_NORMAL_INDENT;
-        } else if (type.equals(IoTypes.FIELD)) {
+        } else if (FIELD.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
-
         return NONE_INDENT;
     }
 
@@ -150,9 +137,7 @@ public class IoBlock extends AbstractBlock {
         // IElementType parent = node.getElementType();
         if (ENTITY.contains(type)) {
             return NONE_INDENT;
-        } else if (type.equals(IoTypes.FIELD)) {
-            return DIRECT_NORMAL_INDENT;
-        } else if (type.equals(IoTypes.ENUM_FIELD)) {
+        } else if (FIELD.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
         return NONE_INDENT;

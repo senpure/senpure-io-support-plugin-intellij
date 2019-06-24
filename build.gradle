@@ -46,7 +46,7 @@ patchPluginXml {
     changeNotes """
       <![CDATA[
        io-support.<br>
-       <em>io-syntaxHighlighter</em>
-       <em>io-format</em>
+       <em>io-syntaxHighlighter</em><br>
+       <em>io-format</em><br>
     ]]>"""
 }
