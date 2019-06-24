@@ -113,9 +113,12 @@ public class MessageCompletionProvider extends CompletionProvider {
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());
+        if (reader == null) {
+            return;
+        }
         List<Message> messages = reader.getMessages();
         List<Message> singles = new ArrayList<>();
-        for (int i = 0; i < messages.size() - 1; i++) {
+        for (int i = 0; i < messages.size(); i++) {
             Message message = messages.get(i);
             boolean single = true;
             for (int j = 0; j < messages.size(); j++) {
@@ -128,11 +131,12 @@ public class MessageCompletionProvider extends CompletionProvider {
                     break;
                 }
             }
+            logger.debug("{} single {}", message.getName(), single);
             if (single) {
                 singles.add(message);
             }
         }
-        PsiElement parent = parameters.getPosition().getParent();
+        PsiElement parent = parameters.getPosition();
         ASTNode typeNode = IoUtil.preEffectiveNode(parent.getNode());
         String type = "CS";
         if (typeNode != null) {

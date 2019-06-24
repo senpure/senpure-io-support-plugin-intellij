@@ -7,10 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface IoEntityComment extends PsiElement {
 
-  @Nullable
-  PsiElement getTCodeComment();
-
-  @Nullable
+  @NotNull
   PsiElement getTLineComment();
 
 }

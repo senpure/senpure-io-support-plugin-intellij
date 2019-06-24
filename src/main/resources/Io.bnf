@@ -69,10 +69,10 @@ fieldType::=(T_FIELD_TYPE_BASE|T_FIELD_TYPE_QUOTE)
   implements="com.senpure.io.support.plugin.intellij.psi.IoNamedElement"
   methods=[getName setName getNameIdentifier getPresentation]
 }
-//至少需要一个字段才有必要定义bean
+//至少需要一个字段才有必要定义bean 语法上不检查
 bean::= entityComment*
           beanHead beanName  leftBrace
-          field+
+          field*
           rightBrace
 
 beanHead::=T_BEAN_HEAD
@@ -95,11 +95,10 @@ eventName ::=T_EVENT_NAME
  methods=[getName setName getNameIdentifier getPresentation getReferences]
 }
 eventId ::=T_EVENT_ID
- //至少需要两个状态才有必要定义枚举,强制第一个位默认值
+ //至少需要两个状态才有必要定义枚举,强制第一个位默认值 语法上不检查
 enum::=entityComment*
           enumHead enumName leftBrace
-          enumField
-          enumField+
+          enumField *
           rightBrace
 enumHead::=T_ENUM_HEAD
 enumName::=T_ENUM_NAME

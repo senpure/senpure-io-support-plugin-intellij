@@ -4,9 +4,10 @@ import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import com.senpure.io.support.plugin.intellij.IoLexerAdapter;
+import com.senpure.io.support.plugin.intellij.psi.IoBean;
+import com.senpure.io.support.plugin.intellij.psi.IoEnum;
 import com.senpure.io.support.plugin.intellij.psi.IoFieldType;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,12 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
         //  logger.debug("canFindUsagesFor: {} -> {}", psiElement, psiElement.getText());
-        return psiElement instanceof PsiNamedElement;
+        if (psiElement instanceof IoEnum) {
+            return true;
+        } else if (psiElement instanceof IoBean) {
+            return true;
+        }
+        return false;
     }
 
     @Nullable
@@ -49,13 +55,14 @@ public class IoFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getType(@NotNull PsiElement element) {
-        // logger.debug("getType: {} -> {}", element, element.getText());
-        if (element instanceof IoFieldType) {
-            // IoFieldName fieldName = (IoFieldName) element;
+        if (element instanceof IoEnum) {
+            return "enum";
+        } else if (element instanceof IoBean) {
+            return "bean";
+        } else if (element instanceof IoFieldType) {
             return "fieldType";
-        }
-        else {
-            return "bean NameL";
+        } else {
+            return element.getText();
         }
 
     }

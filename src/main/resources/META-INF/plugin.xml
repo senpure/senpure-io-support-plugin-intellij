@@ -1,12 +1,15 @@
 <idea-plugin>
     <id>com.senpure.io.support.plugin.intellij</id>
     <name>io-support</name>
-    <version>1.4</version>
+    <version>1.0</version>
     <vendor email="senpure@senpure.com" url="http://www.senpure.com">senpure</vendor>
     <description><![CDATA[
-         io-support.<br>
-        <em>io-syntaxHighlighter</em>
-       <em>io-format</em>
+         io-support.io协议的简单支持<br>
+        <em>io-syntaxHighlighter 语法高亮</em>
+        <em>io-component 简单代码提示</em>
+        <em>io-reference 简单引用查找</em>
+        <em>io-format 简单格式化</em>
+        <em>io-annotator 简单错误提示</em>
     ]]></description>
 
     <change-notes><![CDATA[
