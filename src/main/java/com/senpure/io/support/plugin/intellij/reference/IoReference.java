@@ -29,7 +29,12 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     public IoReference(@NotNull PsiElement element, TextRange rangeInElement) {
         super(element, rangeInElement);
         name = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
-        namespace = IoUtil.getFileNamespace(element.getContainingFile().getVirtualFile().getPath());
+            namespace = IoUtil.getFileNamespace(element.
+                    getContainingFile().
+                    getOriginalFile().// getContainingFile().getVirtualFile().getPath() 可能会出现空指针
+                    getVirtualFile().
+                    getPath());
+
     }
 
     @NotNull
@@ -73,7 +78,7 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
                 }
             }
             IoEnum ioEnum = entity.getEnum();
-            if (ioEnum == null) {
+            if (ioEnum != null) {
                 IoEnumName enumName = ioEnum.getEnumName();
                 if (enumName != null) {
                     variants.add(LookupElementBuilder.create(enumName).
