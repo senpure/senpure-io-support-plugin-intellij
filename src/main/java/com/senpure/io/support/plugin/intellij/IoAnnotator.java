@@ -39,9 +39,110 @@ public class IoAnnotator implements Annotator {
                 holder.createErrorAnnotation(bean.getEnumName(), "枚举至少需要两个字段");
             }
             checkEnum(bean.getEnumFieldList(), holder);
+
+        } else if (element instanceof IoBeanName) {
+            checkBeanName((IoBeanName) element, holder);
+        } else if (element instanceof IoEnumName) {
+            checkEnumName((IoEnumName) element, holder);
+        } else if (element instanceof IoMessageId) {
+            checkMessageId((IoMessageId) element, holder);
+        } else if (element instanceof IoEventId) {
+            checkEventId((IoEventId) element, holder);
+        } else if (element instanceof IoEventName) {
+            checkEventName((IoEventName) element, holder);
+        } else if (element instanceof IoMessageName) {
+            IoMessageName messageName = (IoMessageName) element;
+            checkMessageName(IoUtil.preEffectiveNode(element.getNode()).getText(), messageName, holder);
         }
     }
 
+
+    private void checkMessageName(String type, IoMessageName messageName, @NotNull AnnotationHolder holder) {
+        List<IoMessage> messages = IoUtil.findMessage(messageName.getProject(),
+                IoUtil.getFileNamespace(messageName.getContainingFile().
+                        getVirtualFile().getPath()));
+
+        //  String name = type + messageName.getText();
+        for (IoMessage message : messages) {
+            // String temp = message.getMessageType().getText() + message.getMessageName().getText();
+            if (Objects.equals(message.getMessageName().getText(), messageName.getText())) {
+                if (!Objects.equals(messageName, message.getMessageName())) {
+                    if (Objects.equals(type, message.getMessageType().getText())) {
+
+                        holder.createErrorAnnotation(messageName, "name相同" + message.getContainingFile().getName());
+                        holder.createErrorAnnotation(message.getMessageName(), "name相同" + messageName.getContainingFile().getName());
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkEventName(IoEventName eventName, @NotNull AnnotationHolder holder) {
+        List<IoEvent> events = IoUtil.findEvent(eventName.getProject(),
+                IoUtil.getFileNamespace(eventName.getContainingFile().
+                        getVirtualFile().getPath()));
+        for (IoEvent event : events) {
+            if (Objects.equals(eventName.getText(), event.getEventName().getText())) {
+                if (!Objects.equals(eventName, event.getEventName())) {
+                    holder.createErrorAnnotation(eventName, "name相同" + event.getContainingFile().getName());
+                    holder.createErrorAnnotation(event.getEventName(), "name相同" + eventName.getContainingFile().getName());
+                }
+            }
+        }
+    }
+
+    private void checkEventId(IoEventId eventId, @NotNull AnnotationHolder holder) {
+        List<IoEvent> events = IoUtil.findEvent(eventId.getProject());
+        for (IoEvent event : events) {
+            if (Objects.equals(event.getEventId().getText(), eventId.getText())) {
+                if (!Objects.equals(eventId, event.getEventId())) {
+                    holder.createErrorAnnotation(eventId, "eventId相同" + event.getContainingFile().getName());
+                    holder.createErrorAnnotation(event.getEventId(), "eventId相同" + eventId.getContainingFile().getName());
+                }
+            }
+        }
+    }
+
+    private void checkMessageId(IoMessageId messageId, @NotNull AnnotationHolder holder) {
+
+        List<IoMessage> messages = IoUtil.findMessage(messageId.getProject());
+
+        for (IoMessage message : messages) {
+            if (Objects.equals(message.getMessageId().getText(), messageId.getText())) {
+                if (!Objects.equals(messageId, message.getMessageId())) {
+                    holder.createErrorAnnotation(messageId, "messageId相同" + message.getContainingFile().getName());
+                    holder.createErrorAnnotation(message.getMessageId(), "messageId相同" + messageId.getContainingFile().getName());
+                }
+            }
+        }
+
+    }
+
+    private void checkBeanName(IoBeanName beanName, @NotNull AnnotationHolder holder) {
+
+
+        checkName(beanName, holder);
+    }
+
+    private void checkName(IoNamedElement name, @NotNull AnnotationHolder holder) {
+        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(name.getProject(),
+                IoUtil.getFileNamespace(name.getContainingFile().getVirtualFile().getPath()),
+                name.getName());
+        for (IoNamedElement element : namedElements) {
+            if (Objects.equals(name.getName(), element.getName())) {
+                if (!element.equals(name)) {
+                    holder.createErrorAnnotation(name, "name相同" + element.getContainingFile().getName());
+                    holder.createErrorAnnotation(element, "name相同" + name.getContainingFile().getName());
+
+                }
+            }
+        }
+    }
+
+    private void checkEnumName(IoEnumName enumName, @NotNull AnnotationHolder holder) {
+        checkName(enumName, holder);
+    }
 
     private void checkEnum(List<IoEnumField> fields, @NotNull AnnotationHolder holder) {
 
@@ -85,14 +186,14 @@ public class IoAnnotator implements Annotator {
                     IoEnumField a = fields.get(i);
                     IoEnumField b = fields.get(j);
                     if (a.getFieldIndex() == null) {
-                        holder.createErrorAnnotation(a.getFieldName(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i]);
                     } else {
-                        holder.createErrorAnnotation(a.getFieldIndex(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(a.getFieldIndex(), "相同index " + indexes[i]);
                     }
                     if (b.getFieldIndex() == null) {
-                        holder.createErrorAnnotation(b.getFieldName(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]);
                     } else {
-                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]);
                     }
 
 
@@ -141,14 +242,14 @@ public class IoAnnotator implements Annotator {
                     IoField a = fields.get(i);
                     IoField b = fields.get(j);
                     if (a.getFieldIndex() == null) {
-                        holder.createErrorAnnotation(a.getFieldName(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i]);
                     } else {
-                        holder.createErrorAnnotation(a.getFieldIndex(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(a.getFieldIndex(), "相同index " + indexes[i]);
                     }
                     if (b.getFieldIndex() == null) {
-                        holder.createErrorAnnotation(b.getFieldName(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]);
                     } else {
-                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index "+indexes[i]);
+                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]);
                     }
 
 

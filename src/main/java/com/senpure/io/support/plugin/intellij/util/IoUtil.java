@@ -307,6 +307,61 @@ public class IoUtil {
         return wrapper;
     }
 
+    public static List<IoMessage> findMessage(Project project) {
+
+        return findMessage(project, null);
+    }
+
+    public static List<IoMessage> findMessage(Project project, String namespace) {
+        List<IoMessage> results = new ArrayList<>();
+        Collection<VirtualFile> virtualFiles =
+                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        for (VirtualFile virtualFile : virtualFiles) {
+            if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
+                IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
+                if (ioFile != null) {
+                    IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
+                    if (ioEntities != null) {
+                        for (IoEntity ioEntity : ioEntities) {
+                            IoMessage message = ioEntity.getMessage();
+                            if (message != null) {
+                                results.add(message);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    public static List<IoEvent> findEvent(Project project) {
+        return findEvent(project, null);
+    }
+
+    public static List<IoEvent> findEvent(Project project, String namespace) {
+        List<IoEvent> results = new ArrayList<>();
+        Collection<VirtualFile> virtualFiles =
+                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        for (VirtualFile virtualFile : virtualFiles) {
+            if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
+                IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
+                if (ioFile != null) {
+                    IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
+                    if (ioEntities != null) {
+                        for (IoEntity ioEntity : ioEntities) {
+                            IoEvent event = ioEntity.getEvent();
+                            if (event != null) {
+                                results.add(event);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
     public static List<IoEntity> findEntities(Project project) {
         List<IoEntity> results = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
@@ -365,7 +420,7 @@ public class IoUtil {
                 }
             }
         }
-        return  results;
+        return results;
     }
 
     public static List<IoNamedElement> findBeansOrEnums(Project project, String name) {
