@@ -71,25 +71,50 @@ public class IoColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "message   CS  Clazz 1001 {\n" +
-                "    int   na ;//汉子\n" +
-                "    int age  ;//age\n" +
-                "    Sexy sexy;\n" +
-                "    Student[] students;\n" +
+        return "namespace com.senpure.io.demo;\n" +
+                "javaPack  com.senpure.io.demo;\n" +
+                "import    hell2.io;\n" +
+                "\n" +
+                "#namespace 定义命名空间\n" +
+                "#javaPack  定义java代码的包\n" +
+                "#import    引用其他定义的文件\n" +
+                "\n" +
+                "#定义一个bean 省略 idnex\n" +
+                "//bean的注释\n" +
+                "bean Student {\n" +
+                "    int    id;                          //学生id\n" +
+                "    int    age;                         //年龄\n" +
+                "    Sexy   sexy;\n" +
+                "    String name;                        //姓名\n" +
                 "}\n" +
-                "bean Student{\n" +
-                " int age  ;//age\n" +
-                " String name;\n" +
-                " Sexy X;\n" +
+                "\n" +
+                "#定义一个bean 完整index\n" +
+                "//班级信息\n" +
+                "bean Clazz {\n" +
+                "    int        id       = 1;\n" +
+                "    Student [] students = 2;            //\n" +
                 "}\n" +
-                "enum Sexy{\n" +
+                "\n" +
+                "enum State {\n" +
                 "    X;\n" +
                 "    Y;\n" +
                 "}\n" +
-                "event   Hi 1001 {\n" +
-                "    int   dk ;//comment\n" +
-                "    int age  ;//age\n" +
-                "}"
+                "\n" +
+                "//上学事件\n" +
+                "event GoSchool 1002 {\n" +
+                "    Student student;\n" +
+                "}\n" +
+                "\n" +
+                "\n" +
+                "//获取班级信息\n" +
+                "message CS Clazz 10003 {\n" +
+                "    int clazzId;\n" +
+                "}\n" +
+                "\n" +
+                "//返回班级信息\n" +
+                "message SC Clazz 10004 {\n" +
+                "    Clazz clazz;\n" +
+                "}\n"
                 ;
     }
 
