@@ -77,7 +77,7 @@ public class IoUtil {
     }
 
     private static int initMessageId(boolean cs) {
-        int messageId=initId(maxMessageId);
+        int messageId = initId(maxMessageId);
 
         return cs ? messageId + 1 : messageId + 2;
     }
@@ -89,10 +89,10 @@ public class IoUtil {
         } else {
             String str = maxId + "";
             int temp = (int) Math.pow(10, str.length() - 1);
-            id = maxId  / temp * temp;
+            id = maxId / temp * temp;
         }
-        if (id< 10000) {
-            id= 10000;
+        if (id < 10000) {
+            id = 10000;
         }
         return id;
     }
@@ -100,6 +100,7 @@ public class IoUtil {
     private static int initEventId() {
         return initId(maxEventId);
     }
+
     public static Integer getAutoEventId(String namespace, String name) {
         Integer namespaceMaxId = namespaceMaxEventIdMap.get(namespace);
         if (namespaceMaxId == null) {
@@ -325,27 +326,29 @@ public class IoUtil {
         return results;
     }
 
-    public static List<IoNamedElement> findBeansOrEnums(Project project, String name) {
+
+    public static List<IoNamedElement> findBeansOrEnums(Project project, String namespace, String name) {
         List<IoNamedElement> results = new ArrayList<>();
 
         Collection<VirtualFile> virtualFiles =
                 FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
-            IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (ioFile != null) {
-                IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
-                if (ioEntities != null) {
-                    for (IoEntity ioEntity : ioEntities) {
-                        IoEnum ioEnum = ioEntity.getEnum();
-                        if (ioEnum != null && ioEnum.getEnumName() != null) {
-                            if (Objects.equals(ioEnum.getEnumName().getText(), name))
-                                results.add(ioEnum.getEnumName());
-                        }
-                        IoBean bean = ioEntity.getBean();
-                        if (bean != null && bean.getBeanName() != null) {
-                            if (Objects.equals(bean.getBeanName().getText(), name))
-                                results.add(bean.getBeanName());
-                        }
+            if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
+                IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
+                if (ioFile != null) {
+                    IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
+                    if (ioEntities != null) {
+                        for (IoEntity ioEntity : ioEntities) {
+                            IoEnum ioEnum = ioEntity.getEnum();
+                            if (ioEnum != null && ioEnum.getEnumName() != null) {
+                                if (Objects.equals(ioEnum.getEnumName().getText(), name))
+                                    results.add(ioEnum.getEnumName());
+                            }
+                            IoBean bean = ioEntity.getBean();
+                            if (bean != null && bean.getBeanName() != null) {
+                                if (Objects.equals(bean.getBeanName().getText(), name))
+                                    results.add(bean.getBeanName());
+                            }
 //                        IoMessage message = ioEntity.getMessage();
 //                        if (message != null && message.getMessageName() != null) {
 //                            if (Objects.equals(message.getMessageName().getText(), name))
@@ -357,12 +360,17 @@ public class IoUtil {
 //                                results.add(event.getEventName());
 //                        }
 
+                        }
                     }
                 }
             }
-
         }
-        return results;
+        return  results;
+    }
+
+    public static List<IoNamedElement> findBeansOrEnums(Project project, String name) {
+
+        return findBeansOrEnums(project, null, name);
     }
 
 }

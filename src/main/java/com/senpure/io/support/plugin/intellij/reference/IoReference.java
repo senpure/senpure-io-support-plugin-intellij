@@ -24,16 +24,19 @@ import java.util.List;
 public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
     private String name;
 
+    private String namespace;
+
     public IoReference(@NotNull PsiElement element, TextRange rangeInElement) {
         super(element, rangeInElement);
         name = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
+        namespace = IoUtil.getFileNamespace(element.getContainingFile().getVirtualFile().getPath());
     }
 
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(project, name);
+        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(project, namespace,name);
         List<ResolveResult> results = new ArrayList<>();
 
         for (IoNamedElement namedElement : namedElements) {
