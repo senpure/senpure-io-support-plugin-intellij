@@ -234,11 +234,16 @@ public class IoAnnotator implements Annotator {
                                 + position
                         );
                     }
-//                    if (b.getFieldIndex() == null) {
-//                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]);
-//                    } else {
-//                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]);
-//                    }
+                    if (b.getFieldIndex() == null) {
+                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]
+                                + getPosition(a)
+                        )
+                        ;
+                    } else {
+                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]
+                                + getPosition(a)
+                        );
+                    }
 
 
                 }
@@ -257,7 +262,10 @@ public class IoAnnotator implements Annotator {
                             a.getContainingFile().getName()
                             + getPosition(b.getFieldName()) + ")"
                     );
-                    // holder.createErrorAnnotation(b.getFieldName(), "相同字段名");
+                    holder.createErrorAnnotation(b.getFieldName(), "fieldName相同(" +
+                            b.getContainingFile().getName()
+                            + getPosition(a.getFieldName()) + ")"
+                    );
                 }
             }
         }
@@ -296,11 +304,15 @@ public class IoAnnotator implements Annotator {
                                 + getPosition(b)
                         );
                     }
-//                    if (b.getFieldIndex() == null) {
-//                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]);
-//                    } else {
-//                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]);
-//                    }
+                    if (b.getFieldIndex() == null) {
+                        holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]
+                                + getPosition(a)
+                        );
+                    } else {
+                        holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]
+                                + getPosition(a)
+                        );
+                    }
 
 
                 }
