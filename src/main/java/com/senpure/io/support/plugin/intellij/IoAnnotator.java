@@ -73,7 +73,7 @@ public class IoAnnotator implements Annotator {
                     if (Objects.equals(type, message.getMessageType().getText())) {
                         holder.createErrorAnnotation(messageName, "name相同(" +
                                 message.getContainingFile().getName()
-                                + getPostion(message.getMessageName()) + ")"
+                                + getPosition(message.getMessageName()) + ")"
                         );     //holder.createErrorAnnotation(message.getMessageName(), "name相同" + messageName.getContainingFile().getName());
 
                     }
@@ -92,7 +92,7 @@ public class IoAnnotator implements Annotator {
 
                     holder.createErrorAnnotation(eventName, "name相同(" +
                             event.getContainingFile().getName()
-                            + getPostion(event.getEventName()) + ")"
+                            + getPosition(event.getEventName()) + ")"
                     );
                     // holder.createErrorAnnotation(event.getEventName(), "name相同" + eventName.getContainingFile().getName());
                 }
@@ -108,7 +108,7 @@ public class IoAnnotator implements Annotator {
 
                     holder.createErrorAnnotation(eventId, "eventId相同(" +
                             event.getContainingFile().getName()
-                            + getPostion(event.getEventId()) + ")"
+                            + getPosition(event.getEventId()) + ")"
                     );
 
                     //holder.createErrorAnnotation(event.getEventId(), "eventId相同" + eventId.getContainingFile().getName());
@@ -126,7 +126,7 @@ public class IoAnnotator implements Annotator {
                 if (!Objects.equals(messageId, message.getMessageId())) {
                     holder.createErrorAnnotation(messageId, "messageId相同(" +
                             messageId.getContainingFile().getName()
-                            + getPostion(message.getMessageId()) + ")"
+                            + getPosition(message.getMessageId()) + ")"
                     );
                     //holder.createErrorAnnotation(message.getMessageId(), "messageId相同" + messageId.getContainingFile().getName());
                 }
@@ -139,10 +139,10 @@ public class IoAnnotator implements Annotator {
         checkName(beanName, holder);
     }
 
-    private Position getPostion(PsiElement element) {
+    private Position getPosition(PsiElement element) {
 
         Document document = PsiDocumentManager.getInstance(element.getProject()).
-                getDocument(element.getContainingFile().getOriginalFile());
+                getCachedDocument(element.getContainingFile().getOriginalFile());
         TextRange textRange = element.getTextRange();
         int line = document.getLineNumber(textRange.getStartOffset());
         int offset = document.getLineStartOffset(line);
@@ -162,7 +162,7 @@ public class IoAnnotator implements Annotator {
             if (Objects.equals(name.getName(), element.getName())) {
                 if (!element.equals(name)) {
 
-                    Position position = getPostion(element);
+                    Position position = getPosition(element);
 
                     holder.createErrorAnnotation(name, "name相同("
                             + element.getContainingFile().getName()
@@ -188,7 +188,7 @@ public class IoAnnotator implements Annotator {
                 if (Objects.equals(a.getFieldName().getText(), b.getFieldName().getText())) {
                     holder.createErrorAnnotation(a.getFieldName(), "fieldName相同(" +
                             a.getContainingFile().getName()
-                            + getPostion(b.getFieldName()) + ")"
+                            + getPosition(b.getFieldName()) + ")"
                     );
                     // holder.createErrorAnnotation(b.getFieldName(), "相同字段名");
                 }
@@ -223,7 +223,7 @@ public class IoAnnotator implements Annotator {
                 if (indexes[i] == indexes[j]) {
                     IoEnumField a = fields.get(i);
                     IoEnumField b = fields.get(j);
-                    Position position = getPostion(b);
+                    Position position = getPosition(b);
                     if (a.getFieldIndex() == null) {
 
                         holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i] +
@@ -255,7 +255,7 @@ public class IoAnnotator implements Annotator {
                 if (Objects.equals(a.getFieldName().getText(), b.getFieldName().getText())) {
                     holder.createErrorAnnotation(a.getFieldName(), "fieldName相同(" +
                             a.getContainingFile().getName()
-                            + getPostion(b.getFieldName()) + ")"
+                            + getPosition(b.getFieldName()) + ")"
                     );
                     // holder.createErrorAnnotation(b.getFieldName(), "相同字段名");
                 }
@@ -290,10 +290,10 @@ public class IoAnnotator implements Annotator {
                     IoField b = fields.get(j);
                     if (a.getFieldIndex() == null) {
                         holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i]
-                                + getPostion(b));
+                                + getPosition(b));
                     } else {
                         holder.createErrorAnnotation(a.getFieldIndex(), "相同index " + indexes[i]
-                                + getPostion(b)
+                                + getPosition(b)
                         );
                     }
 //                    if (b.getFieldIndex() == null) {
