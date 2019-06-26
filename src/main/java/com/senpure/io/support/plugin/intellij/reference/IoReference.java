@@ -2,6 +2,7 @@ package com.senpure.io.support.plugin.intellij.reference;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
@@ -25,15 +26,17 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     private String name;
 
     private String namespace;
+    private Module module;
 
     public IoReference(@NotNull PsiElement element, TextRange rangeInElement) {
         super(element, rangeInElement);
         name = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
-            namespace = IoUtil.getFileNamespace(element.
-                    getContainingFile().
-                    getOriginalFile().// getContainingFile().getVirtualFile().getPath() 可能会出现空指针
-                    getVirtualFile().
-                    getPath());
+        namespace = IoUtil.getFileNamespace(element.
+                getContainingFile().
+                getOriginalFile().// getContainingFile().getVirtualFile().getPath() 可能会出现空指针
+                getVirtualFile().
+                getPath());
+        module = IoUtil.getModule(element);
 
     }
 
@@ -41,7 +44,8 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(project, namespace,name);
+        List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(project,
+                module, namespace, name);
         List<ResolveResult> results = new ArrayList<>();
 
         for (IoNamedElement namedElement : namedElements) {
@@ -64,7 +68,7 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     public Object[] getVariants() {
         Project project = myElement.getProject();
         List<LookupElement> variants = new ArrayList<>();
-        List<IoEntity> entities = IoUtil.findEntities(project);
+        List<IoEntity> entities = IoUtil.findEntities(project, module, namespace);
 
         for (IoEntity entity : entities) {
             IoBean bean = entity.getBean();

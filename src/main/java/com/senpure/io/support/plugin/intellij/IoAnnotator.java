@@ -60,11 +60,16 @@ public class IoAnnotator implements Annotator {
     }
 
 
-    private void checkMessageName(String type, IoMessageName messageName, @NotNull AnnotationHolder holder) {
-        List<IoMessage> messages = IoUtil.findMessage(messageName.getProject(),
-                IoUtil.getFileNamespace(messageName.getContainingFile().
-                        getVirtualFile().getPath()));
+    private String getFilePath(PsiElement element) {
+        return IoUtil.getFilePath(element);
+    }
 
+    private void checkMessageName(String type, IoMessageName messageName, @NotNull AnnotationHolder holder) {
+
+        String filePath = getFilePath(messageName);
+        List<IoMessage> messages = IoUtil.findMessage(messageName.getProject(),
+                IoUtil.getModule(messageName),
+                IoUtil.getFileNamespace(filePath));
         //  String name = type + messageName.getText();
         for (IoMessage message : messages) {
             // String temp = message.getMessageType().getText() + message.getMessageName().getText();
@@ -83,9 +88,11 @@ public class IoAnnotator implements Annotator {
     }
 
     private void checkEventName(IoEventName eventName, @NotNull AnnotationHolder holder) {
+
+        String filePath = getFilePath(eventName);
         List<IoEvent> events = IoUtil.findEvent(eventName.getProject(),
-                IoUtil.getFileNamespace(eventName.getContainingFile().
-                        getVirtualFile().getPath()));
+                IoUtil.getModule(eventName),
+                IoUtil.getFileNamespace(filePath));
         for (IoEvent event : events) {
             if (Objects.equals(eventName.getText(), event.getEventName().getText())) {
                 if (!Objects.equals(eventName, event.getEventName())) {
@@ -101,7 +108,10 @@ public class IoAnnotator implements Annotator {
     }
 
     private void checkEventId(IoEventId eventId, @NotNull AnnotationHolder holder) {
-        List<IoEvent> events = IoUtil.findEvent(eventId.getProject());
+        String filePath = getFilePath(eventId);
+        List<IoEvent> events = IoUtil.findEvent(eventId.getProject(),
+                IoUtil.getModule(eventId),
+                IoUtil.getFileNamespace(filePath));
         for (IoEvent event : events) {
             if (Objects.equals(event.getEventId().getText(), eventId.getText())) {
                 if (!Objects.equals(eventId, event.getEventId())) {
@@ -119,7 +129,10 @@ public class IoAnnotator implements Annotator {
 
     private void checkMessageId(IoMessageId messageId, @NotNull AnnotationHolder holder) {
 
-        List<IoMessage> messages = IoUtil.findMessage(messageId.getProject());
+        String filePath = getFilePath(messageId);
+        List<IoMessage> messages = IoUtil.findMessage(messageId.getProject(),
+                IoUtil.getModule(messageId),
+                IoUtil.getFileNamespace(filePath));
 
         for (IoMessage message : messages) {
             if (Objects.equals(message.getMessageId().getText(), messageId.getText())) {
@@ -154,8 +167,10 @@ public class IoAnnotator implements Annotator {
     }
 
     private void checkName(IoNamedElement name, @NotNull AnnotationHolder holder) {
+        String filePath = getFilePath(name);
         List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(name.getProject(),
-                IoUtil.getFileNamespace(name.getContainingFile().getVirtualFile().getPath()),
+                IoUtil.getModule(name),
+                IoUtil.getFileNamespace(filePath),
                 name.getName());
 
         for (IoNamedElement element : namedElements) {
@@ -270,11 +285,19 @@ public class IoAnnotator implements Annotator {
             }
         }
 
-
+        String filePath = null;
+        List<IoEntity> ioEntities = null;
         for (IoField field : fields) {
             String type = field.getFieldType().getText();
             if (!ProtocolUtil.isBaseField(type)) {
-                if (IoUtil.findBeansOrEnums(field.getProject(), type).size() == 0) {
+                if (filePath == null) {
+                    filePath = getFilePath(field);
+                   // Module module = IoUtil.getModule(field);
+                    ioEntities = IoUtil.findEntities(field.getProject(),
+                            IoUtil.getModule(field)
+                            , IoUtil.getFileNamespace(filePath));
+                }
+                if (IoUtil.findBeansOrEnums(ioEntities, type).size() == 0) {
                     holder.createErrorAnnotation(field.getFieldType(), "没有找到定义");
                 }
             }

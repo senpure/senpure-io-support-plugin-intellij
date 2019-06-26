@@ -1,8 +1,11 @@
 package com.senpure.io.support.plugin.intellij.util;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.search.FileTypeIndex;
@@ -307,86 +310,70 @@ public class IoUtil {
         return wrapper;
     }
 
-    public static List<IoMessage> findMessage(Project project) {
 
-        return findMessage(project, null);
+    public static String getFilePath(PsiElement element) {
+        return element.getContainingFile().getOriginalFile().getVirtualFile().getPath();
     }
 
-    public static List<IoMessage> findMessage(Project project, String namespace) {
+    public static Module getModule( PsiElement element) {
+
+
+        return ModuleUtil.findModuleForPsiElement(element);
+
+
+    }
+
+    public static List<IoMessage> findMessage(Project project, Module module) {
+
+        return findMessage(project, module, null);
+    }
+
+    public static List<IoMessage> findMessage(Project project, Module module, String namespace) {
         List<IoMessage> results = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        for (VirtualFile virtualFile : virtualFiles) {
-            if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
-                IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
-                if (ioFile != null) {
-                    IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
-                    if (ioEntities != null) {
-                        for (IoEntity ioEntity : ioEntities) {
-                            IoMessage message = ioEntity.getMessage();
-                            if (message != null) {
-                                results.add(message);
-                            }
-                        }
-                    }
-                }
+        List<IoEntity> ioEntities = findEntities(project, module, namespace);
+        for (IoEntity ioEntity : ioEntities) {
+            IoMessage message = ioEntity.getMessage();
+            if (message != null) {
+                results.add(message);
             }
         }
         return results;
     }
 
-    public static List<IoEvent> findEvent(Project project) {
-        return findEvent(project, null);
+    public static List<IoEvent> findEvent(Project project, Module module) {
+        return findEvent(project, module, null);
     }
 
-    public static List<IoEvent> findEvent(Project project, String namespace) {
+    public static List<IoEvent> findEvent(Project project, Module module, String namespace) {
         List<IoEvent> results = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        for (VirtualFile virtualFile : virtualFiles) {
-            if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
-                IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
-                if (ioFile != null) {
-                    IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
-                    if (ioEntities != null) {
-                        for (IoEntity ioEntity : ioEntities) {
-                            IoEvent event = ioEntity.getEvent();
-                            if (event != null) {
-                                results.add(event);
-                            }
-                        }
-                    }
-                }
+        List<IoEntity> ioEntities = findEntities(project, module, namespace);
+        for (IoEntity ioEntity : ioEntities) {
+            IoEvent event = ioEntity.getEvent();
+            if (event != null) {
+                results.add(event);
             }
         }
         return results;
     }
 
     public static List<IoEntity> findEntities(Project project) {
-        List<IoEntity> results = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        for (VirtualFile virtualFile : virtualFiles) {
-            IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (ioFile != null) {
-                IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
-                if (ioEntities != null) {
-                    for (IoEntity ioEntity : ioEntities) {
-                        results.add(ioEntity);
-                    }
-                }
 
-            }
-        }
-        return results;
+        return findEntities(project, null, null);
     }
 
+    public static List<IoEntity> findEntities(Project project, Module module, String namespace) {
 
-    public static List<IoNamedElement> findBeansOrEnums(Project project, String namespace, String name) {
-        List<IoNamedElement> results = new ArrayList<>();
+       List<IoEntity> results = new ArrayList<>();
+//        Collection<VirtualFile> virtualFiles =
+//                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        Collection<VirtualFile> virtualFiles = null;
+        if (module == null) {
+            virtualFiles= FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.projectScope(project));
+        } else {
 
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
+          //  FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScopeUtil.)
+            virtualFiles= FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.moduleScope(module));
+        }
         for (VirtualFile virtualFile : virtualFiles) {
             if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {
                 IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
@@ -394,38 +381,45 @@ public class IoUtil {
                     IoEntity[] ioEntities = PsiTreeUtil.getChildrenOfType(ioFile, IoEntity.class);
                     if (ioEntities != null) {
                         for (IoEntity ioEntity : ioEntities) {
-                            IoEnum ioEnum = ioEntity.getEnum();
-                            if (ioEnum != null && ioEnum.getEnumName() != null) {
-                                if (Objects.equals(ioEnum.getEnumName().getText(), name))
-                                    results.add(ioEnum.getEnumName());
-                            }
-                            IoBean bean = ioEntity.getBean();
-                            if (bean != null && bean.getBeanName() != null) {
-                                if (Objects.equals(bean.getBeanName().getText(), name))
-                                    results.add(bean.getBeanName());
-                            }
-//                        IoMessage message = ioEntity.getMessage();
-//                        if (message != null && message.getMessageName() != null) {
-//                            if (Objects.equals(message.getMessageName().getText(), name))
-//                                results.add(message.getMessageName());
-//                        }
-//                        IoEvent event = ioEntity.getEvent();
-//                        if (event != null && event.getEventName() != null) {
-//                            if (Objects.equals(event.getEventName().getText(), name))
-//                                results.add(event.getEventName());
-//                        }
-
+                            results.add(ioEntity);
                         }
                     }
+
                 }
             }
         }
+
         return results;
     }
 
-    public static List<IoNamedElement> findBeansOrEnums(Project project, String name) {
+    public static List<IoNamedElement> findBeansOrEnums(List<IoEntity> ioEntities, String name) {
+        List<IoNamedElement> results = new ArrayList<>();
+        for (IoEntity ioEntity : ioEntities) {
+            IoEnum ioEnum = ioEntity.getEnum();
+            if (ioEnum != null && ioEnum.getEnumName() != null) {
+                if (Objects.equals(ioEnum.getEnumName().getText(), name))
+                    results.add(ioEnum.getEnumName());
+            }
+            IoBean bean = ioEntity.getBean();
+            if (bean != null && bean.getBeanName() != null) {
+                if (Objects.equals(bean.getBeanName().getText(), name))
+                    results.add(bean.getBeanName());
+            }
+        }
 
-        return findBeansOrEnums(project, null, name);
+        return results;
+    }
+
+    public static List<IoNamedElement> findBeansOrEnums(Project project, Module module, String namespace, String name) {
+
+        List<IoEntity> ioEntities = findEntities(project, module, namespace);
+        return findBeansOrEnums(ioEntities, name);
+
+    }
+
+    public static List<IoNamedElement> findBeansOrEnums(Project project, Module module, String name) {
+
+        return findBeansOrEnums(project, module, null, name);
     }
 
 }
