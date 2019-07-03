@@ -27,7 +27,7 @@ public class IoBlock extends AbstractBlock {
     //private static final Logger logger = Logger.getInstance(IoBlock.class);
     private final static Indent NONE_INDENT = Indent.getNoneIndent();
     private final static Indent DIRECT_NORMAL_INDENT = Indent.getNormalIndent(true);
-    // private final static Indent SAME_AS_PARENT_INDENT = Indent.getSpaceIndent(0, true);
+    private final static Indent SAME_AS_PARENT_INDENT = Indent.getSpaceIndent(0, true);
     private SpacingBuilder spacingBuilder;
     private Indent indent;
     private Indent childIndent;
@@ -128,7 +128,7 @@ public class IoBlock extends AbstractBlock {
         } else if (FIELD.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
-        return NONE_INDENT;
+        return SAME_AS_PARENT_INDENT;
     }
 
 
@@ -140,7 +140,7 @@ public class IoBlock extends AbstractBlock {
         } else if (FIELD.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
-        return NONE_INDENT;
+        return SAME_AS_PARENT_INDENT;
     }
 
     @Override

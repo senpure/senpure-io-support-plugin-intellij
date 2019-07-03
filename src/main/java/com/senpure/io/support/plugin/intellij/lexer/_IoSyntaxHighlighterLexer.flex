@@ -32,6 +32,7 @@ DIGIT=[0-9]+
 FIELD_TYPE_BASE=int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|String|string
 IDENTIFIER=[a-zA-Z][a-zA-Z0-9_]*
 HEAD_VALUE=[a-zA-Z0-9_\./\\]+
+IMPORT_VALUE=[a-zA-Z0-9\-_\./\\]+
 LINE_COMMENT="//"[^\r\n]*
 CODE_COMMENT=#[^\r\n]*
 %state MESSAGE_TAG
@@ -64,7 +65,7 @@ CODE_COMMENT=#[^\r\n]*
 <IMPORT_TAG>
 {
  {WHITE_SPACE}           { return WHITE_SPACE; }
- {HEAD_VALUE}".io"       { return T_IMPORT_VALUE;}
+ {IMPORT_VALUE}".io"       { return T_IMPORT_VALUE;}
   ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
 }
 <NAMEPACE_TAG>
