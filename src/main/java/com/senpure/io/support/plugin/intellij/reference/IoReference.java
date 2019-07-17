@@ -68,7 +68,7 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     public Object[] getVariants() {
         Project project = myElement.getProject();
         List<LookupElement> variants = new ArrayList<>();
-        List<IoEntity> entities = IoUtil.findEntities(project, module, namespace);
+        List<IoEntity> entities = IoUtil.findEntities(project, module, null);
 
         for (IoEntity entity : entities) {
             IoBean bean = entity.getBean();
