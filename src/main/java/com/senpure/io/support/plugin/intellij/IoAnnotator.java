@@ -292,10 +292,9 @@ public class IoAnnotator implements Annotator {
             if (!ProtocolUtil.isBaseField(type)) {
                 if (filePath == null) {
                     filePath = getFilePath(field);
-                   // Module module = IoUtil.getModule(field);
+                    // Module module = IoUtil.getModule(field);
                     ioEntities = IoUtil.findEntities(field.getProject(),
-                            IoUtil.getModule(field)
-                            , IoUtil.getFileNamespace(filePath));
+                            IoUtil.getModule(field), null);
                 }
                 if (IoUtil.findBeansOrEnums(ioEntities, type).size() == 0) {
                     holder.createErrorAnnotation(field.getFieldType(), "没有找到定义");

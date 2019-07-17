@@ -27,8 +27,8 @@ public class IoVirtualFileReader extends IoProtocolReader {
     @Override
     public void enterImportValue(IoParser.ImportValueContext ctx) {
         String path = ctx.getText();
-        this.importIos.add(path);
-        File importFile = FileUtil.file(path, (new File(this.filePath)).getParent());
+        importIos.add(path);
+        File importFile = FileUtil.file(path, (new File(filePath)).getParent());
         if (importFile.exists()) {
             if (ioProtocolReaderMap.get(importFile.getAbsolutePath()) == null) {
                 VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
@@ -36,10 +36,11 @@ public class IoVirtualFileReader extends IoProtocolReader {
                 reader.read(file, ioProtocolReaderMap);
                 ioProtocolReaderMap.put(file.getPath(), reader);
             }
-            this.importKeys.add(importFile.getAbsolutePath());
+            importKeys.add(importFile.getAbsolutePath());
         } else {
-            this.checkErrorBuilder();
-            this.errorBuiler.append(this.filePath).append("引用文件 不存在 ").append(path);
+            checkErrorBuilder();
+            errorBuilder.append(filePath).append("引用文件 不存在 ").append(path);
+
         }
 
     }
@@ -50,9 +51,9 @@ public class IoVirtualFileReader extends IoProtocolReader {
     }
 
     public void read(VirtualFile file, Map<String, IoProtocolReader> ioProtocolReaderMap) {
-        this.filePath = file.getPath();
-        this.ioProtocolReaderMap = ioProtocolReaderMap;
-        this.ioErrorListener = new IoErrorListener(filePath);
+        filePath = file.getPath();
+        super.ioProtocolReaderMap = ioProtocolReaderMap;
+        ioErrorListener = new IoErrorListener(filePath);
         try {
             read(CharStreams.fromStream(file.getInputStream()));
         } catch (IOException e) {
@@ -69,7 +70,7 @@ public class IoVirtualFileReader extends IoProtocolReader {
             IoUtil.setFileNamespace(filePath, getNamespace());
 
             for (Message message : getMessages()) {
-                IoUtil.setMessageId(message.getNamespace(),message.getType(),message.getName(),message.getId());
+                IoUtil.setMessageId(message.getNamespace(), message.getType(), message.getName(), message.getId());
             }
             for (Event event : getEvents()) {
                 IoUtil.setEventId(event.getNamespace(), event.getName(), event.getId());

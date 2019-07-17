@@ -69,7 +69,8 @@ public class FieldCompletionProvider extends CompletionProvider {
                 for (String s : base) {
                     result.addElement(LookupElementBuilder.create(s));
                 }
-                for (Bean bean : getBeans()) {
+                List<Bean> beans = getBeans();
+                for (Bean bean : beans) {
                     result.addElement(LookupElementBuilder.create(bean.getName())
                             .withTailText(" (" + bean.getNamespace() + ")", true)
 
@@ -108,11 +109,11 @@ public class FieldCompletionProvider extends CompletionProvider {
                             names.add(name);
                             names.add(nameRule(pre.getText() + "List"));
                             if (text.length() > 0) {
-                                String t=text.toLowerCase();
-                                String t2=pre.getText().toLowerCase();
+                                String t = text.toLowerCase();
+                                String t2 = pre.getText().toLowerCase();
                                 if (!t2.startsWith(t)) {
                                     names.add(text + pre.getText());
-                                    names.add(text + pre.getText()+ "List");
+                                    names.add(text + pre.getText() + "List");
                                 }
                             }
                             // names.add(nameRule(pre.getText() + "Array"));
@@ -123,32 +124,32 @@ public class FieldCompletionProvider extends CompletionProvider {
                         for (String name : names) {
                             result.addElement(LookupElementBuilder.create(name));
                         }
-                     //   IElementType nextType = IoUtil.nexEffectiveElementType(parameters.getPosition().getNode());
+                        //   IElementType nextType = IoUtil.nexEffectiveElementType(parameters.getPosition().getNode());
 
-                            for (String name : names) {
-                                result.addElement(LookupElementBuilder.create(name + ";")
-                                        .withBoldness(true)
-                                        .withTailText(" (补全分号) ", true)
-                                        .withInsertHandler((context1, item) -> {
-                                            parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 1 + name.length() - text.length());
-                                            parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                                            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                                            processor.runWithoutProgress();
-                                            parameters.getEditor().getSelectionModel().removeSelection();
-                                        })
-                                );
-                                result.addElement(LookupElementBuilder.create(name + ";//")
-                                        .withBoldness(true)
-                                        .withTailText(" (补全分号,添加注释) ", true)
-                                        .withInsertHandler((context1, item) -> {
-                                            parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 3 + name.length() - text.length());
-                                            parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                                            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                                            processor.runWithoutProgress();
-                                            parameters.getEditor().getSelectionModel().removeSelection();
-                                        })
-                                );
-                            }
+                        for (String name : names) {
+                            result.addElement(LookupElementBuilder.create(name + ";")
+                                    .withBoldness(true)
+                                    .withTailText(" (补全分号) ", true)
+                                    .withInsertHandler((context1, item) -> {
+                                        parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 1 + name.length() - text.length());
+                                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                                        processor.runWithoutProgress();
+                                        parameters.getEditor().getSelectionModel().removeSelection();
+                                    })
+                            );
+                            result.addElement(LookupElementBuilder.create(name + ";//")
+                                    .withBoldness(true)
+                                    .withTailText(" (补全分号,添加注释) ", true)
+                                    .withInsertHandler((context1, item) -> {
+                                        parameters.getEditor().getCaretModel().moveToOffset(parameters.getOffset() + 3 + name.length() - text.length());
+                                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                                        processor.runWithoutProgress();
+                                        parameters.getEditor().getSelectionModel().removeSelection();
+                                    })
+                            );
+                        }
 
                     }
                 }
