@@ -360,7 +360,10 @@ public class IoUtil {
 
         return findEntities(project, null, null);
     }
+    public static List<IoEntity> findEntities(Project project, Module module) {
 
+        return findEntities(project, module, null);
+    }
     public static List<IoEntity> findEntities(Project project, Module module, String namespace) {
 
        List<IoEntity> results = new ArrayList<>();
