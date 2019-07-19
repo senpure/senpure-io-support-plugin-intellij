@@ -312,6 +312,7 @@ public class IoUtil {
 
 
     public static String getFilePath(PsiElement element) {
+        //getContainingFile().getVirtualFile().getPath() 可能会出现空指针
         return element.getContainingFile().getOriginalFile().getVirtualFile().getPath();
     }
 

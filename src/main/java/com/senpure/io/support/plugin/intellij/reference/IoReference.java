@@ -5,6 +5,8 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
 import com.senpure.io.support.plugin.intellij.IoIcons;
@@ -13,6 +15,8 @@ import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import com.senpure.template.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,14 +35,11 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
     private String namespace;
     private Module module;
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
     public IoReference(@NotNull PsiElement element, TextRange rangeInElement) {
         super(element, rangeInElement);
         name = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
-        namespace = IoUtil.getFileNamespace(element.
-                getContainingFile().
-                getOriginalFile().// getContainingFile().getVirtualFile().getPath() 可能会出现空指针
-                getVirtualFile().
-                getPath());
+        namespace = IoUtil.getFileNamespace(IoUtil.getFilePath(element));
         module = IoUtil.getModule(element);
 
     }
@@ -71,27 +72,39 @@ public class IoReference extends PsiReferenceBase<PsiElement> implements PsiPoly
         IoFile ioFile = (IoFile) myElement.getContainingFile();
         IoHead ioHead = ioFile.findChildByClass(IoHead.class);
         List<String> imports = new ArrayList<>(16);
-        String filePath = myElement.getContainingFile().
-                getOriginalFile().// getContainingFile().getVirtualFile().getPath() 可能会出现空指针
-                getVirtualFile().
-                getPath();
+        String filePath = IoUtil.getFilePath(myElement);
+        imports.add(filePath);
         if (ioHead != null) {
             List<IoHeadContent> headContents = ioHead.getHeadContentList();
             for (IoHeadContent headContent : headContents) {
                 if (headContent.getImport() != null) {
+                    String parent = LocalFileSystem.getInstance().findFileByPath(filePath).getParent().getPath();
                     File importFile = FileUtil.file(headContent.getImport().
-                            getImportValue().getText(), (new File(filePath)).getParent());
-                    imports.add(importFile.getAbsolutePath());
+                            getImportValue().getText(), parent);
+                    if (importFile.exists()) {
+                        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
+                        //统一用虚拟文件系统避免文件分隔符不相同的情况
+                        imports.add(file.getPath());
+                    }
+                    else {
+                        logger.debug("{} 不存在 {}",importFile);
+                    }
 
                 }
 
             }
         }
+
+
+       // logger.debug("import start--------");
+//        for (String anImport : imports) {
+//            logger.debug(anImport);
+//        }
         for (ResolveResult resolveResult : resolveResults) {
-            String path = resolveResult.getElement().getContainingFile().getOriginalFile().getVirtualFile().getPath();
+            String path = IoUtil.getFilePath(resolveResult.getElement());
+           // logger.debug("path {}",path);
             for (String anImport : imports) {
                 if (Objects.equals(anImport, path)) {
-
                     return resolveResult.getElement();
                 }
             }
