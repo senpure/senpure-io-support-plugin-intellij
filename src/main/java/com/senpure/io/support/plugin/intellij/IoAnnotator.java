@@ -66,9 +66,11 @@ public class IoAnnotator implements Annotator {
 
     private void checkMessageName(String type, IoMessageName messageName, @NotNull AnnotationHolder holder) {
 
-      // String filePath = getFilePath(messageName);
+       String filePath = getFilePath(messageName);
         List<IoMessage> messages = IoUtil.findMessage(messageName.getProject(),
-                IoUtil.getModule(messageName));
+                IoUtil.getModule(messageName),
+                IoUtil.getFileNamespace(filePath)
+        );
         //  String name = type + messageName.getText();
         for (IoMessage message : messages) {
             // String temp = message.getMessageType().getText() + message.getMessageName().getText();
@@ -88,9 +90,11 @@ public class IoAnnotator implements Annotator {
 
     private void checkEventName(IoEventName eventName, @NotNull AnnotationHolder holder) {
 
-      //  String filePath = getFilePath(eventName);
+        String filePath = getFilePath(eventName);
         List<IoEvent> events = IoUtil.findEvent(eventName.getProject(),
-                IoUtil.getModule(eventName));
+                IoUtil.getModule(eventName),
+                IoUtil.getFileNamespace(filePath)
+        );
         for (IoEvent event : events) {
             if (Objects.equals(eventName.getText(), event.getEventName().getText())) {
                 if (!Objects.equals(eventName, event.getEventName())) {
@@ -163,10 +167,10 @@ public class IoAnnotator implements Annotator {
     }
 
     private void checkName(IoNamedElement name, @NotNull AnnotationHolder holder) {
-        //String filePath = getFilePath(name);
+        String filePath = getFilePath(name);
         List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(name.getProject(),
                 IoUtil.getModule(name),
-                //IoUtil.getFileNamespace(filePath),
+                IoUtil.getFileNamespace(filePath),
                 name.getName());
 
         for (IoNamedElement element : namedElements) {
