@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
@@ -16,10 +17,12 @@ import com.senpure.io.support.plugin.intellij.IoFileType;
 import com.senpure.io.support.plugin.intellij.IoIcons;
 import com.senpure.io.support.plugin.intellij.model.IoEntityWrapper;
 import com.senpure.io.support.plugin.intellij.psi.*;
+import com.senpure.template.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -311,6 +314,39 @@ public class IoUtil {
     }
 
 
+    /**
+     * 获取引用文件含自己本身
+     * @return
+     */
+    public static  List <String> getImports(PsiElement element)
+    {
+        IoFile ioFile = (IoFile) element.getContainingFile();
+        IoHead ioHead = ioFile.findChildByClass(IoHead.class);
+        List<String> imports = new ArrayList<>(16);
+        String filePath = getFilePath(element);
+        imports.add(filePath);
+        if (ioHead != null) {
+            List<IoHeadContent> headContents = ioHead.getHeadContentList();
+            for (IoHeadContent headContent : headContents) {
+                if (headContent.getImport() != null) {
+                    String parent = LocalFileSystem.getInstance().findFileByPath(filePath).getParent().getPath();
+                    File importFile = FileUtil.file(headContent.getImport().
+                            getImportValue().getText(), parent);
+                    if (importFile.exists()) {
+                        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
+                        //统一用虚拟文件系统避免文件分隔符不相同的情况
+                        imports.add(file.getPath());
+                    }
+                    else {
+                        logger.debug("{} 不存在 {}",importFile);
+                    }
+
+                }
+
+            }
+        }
+        return imports;
+    }
     public static String getFilePath(PsiElement element) {
         //getContainingFile().getVirtualFile().getPath() 可能会出现空指针
         return element.getContainingFile().getOriginalFile().getVirtualFile().getPath();

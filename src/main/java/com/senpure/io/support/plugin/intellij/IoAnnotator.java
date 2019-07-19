@@ -11,6 +11,7 @@ import com.senpure.io.support.plugin.intellij.psi.*;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +67,7 @@ public class IoAnnotator implements Annotator {
 
     private void checkMessageName(String type, IoMessageName messageName, @NotNull AnnotationHolder holder) {
 
-       String filePath = getFilePath(messageName);
+        String filePath = getFilePath(messageName);
         List<IoMessage> messages = IoUtil.findMessage(messageName.getProject(),
                 IoUtil.getModule(messageName),
                 IoUtil.getFileNamespace(filePath)
@@ -110,7 +111,7 @@ public class IoAnnotator implements Annotator {
     }
 
     private void checkEventId(IoEventId eventId, @NotNull AnnotationHolder holder) {
-       // String filePath = getFilePath(eventId);
+        // String filePath = getFilePath(eventId);
         List<IoEvent> events = IoUtil.findEvent(eventId.getProject(),
                 IoUtil.getModule(eventId));
         for (IoEvent event : events) {
@@ -130,7 +131,7 @@ public class IoAnnotator implements Annotator {
 
     private void checkMessageId(IoMessageId messageId, @NotNull AnnotationHolder holder) {
 
-       // String filePath = getFilePath(messageId);
+        // String filePath = getFilePath(messageId);
         List<IoMessage> messages = IoUtil.findMessage(messageId.getProject(),
                 IoUtil.getModule(messageId));
 
@@ -296,8 +297,36 @@ public class IoAnnotator implements Annotator {
                     ioEntities = IoUtil.findEntities(field.getProject(),
                             IoUtil.getModule(field));
                 }
-                if (IoUtil.findBeansOrEnums(ioEntities, type).size() == 0) {
+                List<IoNamedElement> namedElements = IoUtil.findBeansOrEnums(ioEntities, type);
+                if (namedElements.size() == 0) {
                     holder.createErrorAnnotation(field.getFieldType(), "没有找到定义");
+                }
+                if (namedElements.size() > 0) {
+
+                    List<String> imports = IoUtil.getImports(field);
+
+                    List<String> finds = new ArrayList<>();
+                    List<String> has = new ArrayList<>();
+                    for (IoNamedElement namedElement : namedElements) {
+
+                        String refFilePath = IoUtil.getFilePath(namedElement);
+                        has.add(refFilePath);
+                        for (String anImport : imports) {
+                            if (Objects.equals(anImport, refFilePath)) {
+                                finds.add(anImport);
+                                break;
+                            }
+                        }
+                    }
+                    if (finds.size() == 0) {
+                        holder.createErrorAnnotation(field.getFieldType(),
+                                "没有导入.io文件" + has.toString());
+                    } else if (finds.size() > 1) {
+                        holder.createErrorAnnotation(field.getFieldType(),
+                                "无法准确知道引用那个.io 文件中的定义" + finds.toString());
+                    }
+
+
                 }
             }
         }
