@@ -118,7 +118,7 @@ public class IoAnnotator implements Annotator {
             if (Objects.equals(event.getEventId().getText(), eventId.getText())) {
                 if (!Objects.equals(eventId, event.getEventId())) {
 
-                    holder.createErrorAnnotation(eventId, "eventId相同(" +
+                    holder.createErrorAnnotation(eventId, "eventId相同("+event.getEventName()+"<->" +
                             event.getContainingFile().getName()
                             + getPosition(event.getEventId()) + ")"
                     );
@@ -138,7 +138,7 @@ public class IoAnnotator implements Annotator {
         for (IoMessage message : messages) {
             if (Objects.equals(message.getMessageId().getText(), messageId.getText())) {
                 if (!Objects.equals(messageId, message.getMessageId())) {
-                    holder.createErrorAnnotation(messageId, "messageId相同(" +
+                    holder.createErrorAnnotation(messageId, "messageId相同("+message.getMessageName().getName()+"<->" +
                             messageId.getContainingFile().getName()
                             + getPosition(message.getMessageId()) + ")"
                     );
