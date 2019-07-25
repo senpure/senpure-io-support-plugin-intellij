@@ -70,8 +70,17 @@ public class FieldCompletionProvider extends CompletionProvider {
                     result.addElement(LookupElementBuilder.create(s));
                 }
                 List<Bean> beans = getBeans();
+//                System.out.println("start");
+//                for (Bean bean : beans) {
+//                    if (bean.getName().startsWith("Same")) {
+//                        System.out.println(bean.getName()+" "+bean.getNamespace());
+//                    }
+//                }
+//
+//                System.out.println("end");
                 for (Bean bean : beans) {
-                    result.addElement(LookupElementBuilder.create(bean.getName())
+
+                    result.addElement(LookupElementBuilder.create(bean,bean.getName())
                             .withTailText(" (" + bean.getNamespace() + ")", true)
 
                             .withIcon(IoIcons.FILE)
