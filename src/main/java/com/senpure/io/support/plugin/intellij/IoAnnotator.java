@@ -246,25 +246,38 @@ public class IoAnnotator implements Annotator {
                 if (indexes[i] == indexes[j]) {
                     IoEnumField a = fields.get(i);
                     IoEnumField b = fields.get(j);
-                    Position position = getPosition(b);
+
+                    Position bPosition;
+                    Position aPosition;
+                    if (b.getFieldIndex() == null) {
+                        bPosition = getPosition(b.getFieldName());
+                    } else {
+                        bPosition = getPosition(b.getFieldIndex());
+                    }
+                    if (a.getFieldIndex() == null) {
+                        aPosition = getPosition(a.getFieldName());
+                    } else {
+                        aPosition = getPosition(a.getFieldIndex());
+                    }
+
                     if (a.getFieldIndex() == null) {
 
                         holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i] +
-                                position
+                                bPosition
                         );
                     } else {
                         holder.createErrorAnnotation(a.getFieldIndex(), "相同index " + indexes[i]
-                                + position
+                                + bPosition
                         );
                     }
                     if (b.getFieldIndex() == null) {
                         holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]
-                                + getPosition(a)
+                                + aPosition
                         )
                         ;
                     } else {
                         holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]
-                                + getPosition(a)
+                                + aPosition
                         );
                     }
 
@@ -354,21 +367,34 @@ public class IoAnnotator implements Annotator {
                 if (indexes[i] == indexes[j]) {
                     IoField a = fields.get(i);
                     IoField b = fields.get(j);
+                    Position bPosition;
+                    Position aPosition;
+                    if (b.getFieldIndex() == null) {
+                        bPosition = getPosition(b.getFieldName());
+                    } else {
+                        bPosition = getPosition(b.getFieldIndex());
+                    }
+                    if (a.getFieldIndex() == null) {
+                        aPosition = getPosition(a.getFieldName());
+                    } else {
+                        aPosition = getPosition(a.getFieldIndex());
+                    }
+
                     if (a.getFieldIndex() == null) {
                         holder.createErrorAnnotation(a.getFieldName(), "相同index " + indexes[i]
-                                + getPosition(b));
+                                + bPosition);
                     } else {
                         holder.createErrorAnnotation(a.getFieldIndex(), "相同index " + indexes[i]
-                                + getPosition(b)
+                                + bPosition
                         );
                     }
                     if (b.getFieldIndex() == null) {
                         holder.createErrorAnnotation(b.getFieldName(), "相同index " + indexes[i]
-                                + getPosition(a)
+                                +aPosition
                         );
                     } else {
                         holder.createErrorAnnotation(b.getFieldIndex(), "相同index " + indexes[i]
-                                + getPosition(a)
+                                +aPosition
                         );
                     }
 
