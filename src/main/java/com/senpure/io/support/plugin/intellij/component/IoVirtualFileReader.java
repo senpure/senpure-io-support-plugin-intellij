@@ -27,12 +27,13 @@ import java.util.Map;
 public class IoVirtualFileReader extends IoProtocolReader {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public void enterImportValue(IoParser.ImportValueContext ctx) {
 
         String path = ctx.getText();
         importIos.add(path);
-       // String parent = LocalFileSystem.getInstance().findFileByPath(filePath).getParent().getPath();
+        // String parent = LocalFileSystem.getInstance().findFileByPath(filePath).getParent().getPath();
         String parent = new File(filePath).getParent();
         File importFile = FileUtil.file(path, parent);
         if (importFile.exists()) {
@@ -47,7 +48,7 @@ public class IoVirtualFileReader extends IoProtocolReader {
             importKeys.add(file.getPath());
         } else {
 
-           // logger.debug("path {}  parent {} vf {}",path,parent,LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath()));
+            // logger.debug("path {}  parent {} vf {}",path,parent,LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath()));
             checkErrorBuilder();
             errorBuilder.append(filePath).append("引用文件 不存在 ").append(path);
 
@@ -74,17 +75,21 @@ public class IoVirtualFileReader extends IoProtocolReader {
 
 
     @Override
+    protected boolean canWalk() {
+        return true;
+    }
+
+    @Override
     protected void read(CharStream input) {
         super.read(input);
-        if (!isHasError()) {
-            IoUtil.setFileNamespace(filePath, getNamespace());
 
-            for (Message message : getMessages()) {
-                IoUtil.setMessageId(message.getNamespace(), message.getType(), message.getName(), message.getId());
-            }
-            for (Event event : getEvents()) {
-                IoUtil.setEventId(event.getNamespace(), event.getName(), event.getId());
-            }
+        IoUtil.setFileNamespace(filePath, getNamespace());
+        for (Message message : getMessages()) {
+            IoUtil.setMessageId(message.getNamespace(), message.getType(), message.getName(), message.getId());
         }
+        for (Event event : getEvents()) {
+            IoUtil.setEventId(event.getNamespace(), event.getName(), event.getId());
+        }
+
     }
 }

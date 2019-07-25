@@ -5,6 +5,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.*;
 import com.senpure.base.AppEvn;
+import com.senpure.io.generator.model.Bean;
+import com.senpure.io.generator.model.Enum;
 import com.senpure.io.generator.reader.IoProtocolReader;
 import com.senpure.io.generator.reader.IoReader;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +45,21 @@ public class IoReaderComponent implements ProjectComponent {
                     if (!ioVirtualFileReader.isHasError()) {
                         logger.debug("替换 {}", fileOrDirectory.getPath());
                         IoReader.getInstance().replace(fileOrDirectory.getPath(), ioVirtualFileReader);
+                    } else {
+                        IoVirtualFileReader old = (IoVirtualFileReader) IoReader.getInstance().getIoProtocolReaderMap().
+                                get(fileOrDirectory.getPath());
+                        if (old != null) {
+                            for (Bean bean : ioVirtualFileReader.getBeans()) {
+                                if (!old.getBeans().contains(bean)) {
+                                    old.getBeans().add(bean);
+                                }
+                            }
+                            for (Enum bean : ioVirtualFileReader.getEnums()) {
+                                if (!old.getEnums().contains(bean)) {
+                                    old.getEnums().add(bean);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -59,9 +76,9 @@ public class IoReaderComponent implements ProjectComponent {
                     logger.debug("文件复制 {}", event.getFile());
                     IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
                     ioVirtualFileReader.read(event.getFile(), IoReader.getInstance().getIoProtocolReaderMap());
-                    if (!ioVirtualFileReader.isHasError()) {
-                        IoReader.getInstance().replace(event.getOriginalFile().getPath(), ioVirtualFileReader);
-                    }
+                    IoReader.getInstance().getIoProtocolReaderMap().
+                            put(event.getOriginalFile().getPath(), ioVirtualFileReader);
+
                 }
             }
 
@@ -76,7 +93,7 @@ public class IoReaderComponent implements ProjectComponent {
         });
         List<VirtualFile> list = new ArrayList<>(16);
         for (Project openProject : ProjectManager.getInstance().getOpenProjects()) {
-           // IoUtil.findEntities(openProject, "Student");
+            // IoUtil.findEntities(openProject, "Student");
 
             logger.debug("打开Project {}  -> {}", openProject.getName(), openProject.getBasePath());
             findIo(list, LocalFileSystem.getInstance().findFileByPath(openProject.getBasePath()));

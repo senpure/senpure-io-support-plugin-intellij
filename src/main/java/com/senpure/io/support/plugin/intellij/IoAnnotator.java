@@ -118,7 +118,7 @@ public class IoAnnotator implements Annotator {
             if (Objects.equals(event.getEventId().getText(), eventId.getText())) {
                 if (!Objects.equals(eventId, event.getEventId())) {
 
-                    holder.createErrorAnnotation(eventId, "eventId相同("+event.getEventName()+"<->" +
+                    holder.createErrorAnnotation(eventId, "eventId相同(" + event.getEventName().getName() + "<->" +
                             event.getContainingFile().getName()
                             + getPosition(event.getEventId()) + ")"
                     );
@@ -138,7 +138,7 @@ public class IoAnnotator implements Annotator {
         for (IoMessage message : messages) {
             if (Objects.equals(message.getMessageId().getText(), messageId.getText())) {
                 if (!Objects.equals(messageId, message.getMessageId())) {
-                    holder.createErrorAnnotation(messageId, "messageId相同("+message.getMessageName().getName()+"<->" +
+                    holder.createErrorAnnotation(messageId, "messageId相同(" + message.getMessageName().getName() + "<->" +
                             messageId.getContainingFile().getName()
                             + getPosition(message.getMessageId()) + ")"
                     );
@@ -174,6 +174,13 @@ public class IoAnnotator implements Annotator {
                 IoUtil.getFileNamespace(filePath),
                 name.getName());
 
+        if (name.getName().startsWith("SameName")) {
+            System.out.println(name.getName());
+            for (IoNamedElement element : namedElements) {
+                System.out.println(element.getContainingFile().getName() + element.getName() + IoUtil.getFileNamespace(IoUtil.getFilePath(element)));
+            }
+
+        }
         for (IoNamedElement element : namedElements) {
             if (Objects.equals(name.getName(), element.getName())) {
                 if (!element.equals(name)) {
