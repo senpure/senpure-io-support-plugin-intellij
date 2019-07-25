@@ -139,7 +139,7 @@ public class IoAnnotator implements Annotator {
             if (Objects.equals(message.getMessageId().getText(), messageId.getText())) {
                 if (!Objects.equals(messageId, message.getMessageId())) {
                     holder.createErrorAnnotation(messageId, "messageId相同(" + message.getMessageName().getName() + "<->" +
-                            messageId.getContainingFile().getName()
+                            message.getContainingFile().getName()
                             + getPosition(message.getMessageId()) + ")"
                     );
                     //holder.createErrorAnnotation(message.getMessageId(), "messageId相同" + messageId.getContainingFile().getName());
