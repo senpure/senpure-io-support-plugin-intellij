@@ -174,13 +174,13 @@ public class IoAnnotator implements Annotator {
                 IoUtil.getFileNamespace(filePath),
                 name.getName());
 
-        if (name.getName().startsWith("SameName")) {
-            System.out.println(name.getName());
-            for (IoNamedElement element : namedElements) {
-                System.out.println(element.getContainingFile().getName() + element.getName() + IoUtil.getFileNamespace(IoUtil.getFilePath(element)));
-            }
-
-        }
+//        if (name.getName().startsWith("SameName")) {
+//            System.out.println(name.getName());
+//            for (IoNamedElement element : namedElements) {
+//                System.out.println(element.getContainingFile().getName() + element.getName() + IoUtil.getFileNamespace(IoUtil.getFilePath(element)));
+//            }
+//
+//        }
         for (IoNamedElement element : namedElements) {
             if (Objects.equals(name.getName(), element.getName())) {
                 if (!element.equals(name)) {
