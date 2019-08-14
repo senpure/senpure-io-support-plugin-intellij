@@ -43,6 +43,9 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey IMPORT_VALUE = createTextAttributesKey("IO_IMPORT_VALUE");
     public static final TextAttributesKey JAVA_PACK_HEAD = createTextAttributesKey("IO_JAVA_PACK_HEAD");
     public static final TextAttributesKey JAVA_PACK_VALUE = createTextAttributesKey("IO_JAVA_PACK_VALUE");
+    public static final TextAttributesKey LUA_NAMESPACE_HEAD = createTextAttributesKey("IO_LUA_NAMESPACE_HEAD");
+    public static final TextAttributesKey LUA_NAMESPACE_VALUE = createTextAttributesKey("IO_LUA_NAMESPACE_VALUE");
+
     public static final TextAttributesKey LEFT_BRACE = createTextAttributesKey("IO_LEFT_BRACE");
     public static final TextAttributesKey LEFT_BRACKET = createTextAttributesKey("IO_LEFT_BRACKET");
     public static final TextAttributesKey LINE_COMMENT = createTextAttributesKey("IO_LINE_COMMENT");
@@ -76,6 +79,8 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] IMPORT_VALUE_KEYS = new TextAttributesKey[]{ IMPORT_VALUE };
     private static final TextAttributesKey[] JAVA_PACK_HEAD_KEYS = new TextAttributesKey[]{ JAVA_PACK_HEAD };
     private static final TextAttributesKey[] JAVA_PACK_VALUE_KEYS = new TextAttributesKey[]{ JAVA_PACK_VALUE };
+    private static final TextAttributesKey[] LUA_NAMESPACE_HEAD_KEYS = new TextAttributesKey[]{LUA_NAMESPACE_HEAD};
+    private static final TextAttributesKey[] LUA_NAMESPACE_VALUE_KEYS = new TextAttributesKey[]{ LUA_NAMESPACE_VALUE};
     private static final TextAttributesKey[] LEFT_BRACE_KEYS = new TextAttributesKey[]{ LEFT_BRACE };
     private static final TextAttributesKey[] LEFT_BRACKET_KEYS = new TextAttributesKey[]{ LEFT_BRACKET };
     private static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{ LINE_COMMENT };
@@ -164,6 +169,13 @@ public class IoSyntaxHighlighter extends SyntaxHighlighterBase {
         else if (tokenType.equals(IoTypes.T_JAVA_PACK_VALUE)) {
             return JAVA_PACK_VALUE_KEYS;
         }
+        else if (tokenType.equals(IoTypes.T_LUA_NAMESPACE_HEAD)) {
+            return LUA_NAMESPACE_HEAD_KEYS;
+        }
+        else if (tokenType.equals(IoTypes.T_LUA_NAMESPACE_VALUE)) {
+            return LUA_NAMESPACE_VALUE_KEYS;
+        }
+
         else if (tokenType.equals(IoTypes.T_LEFT_BRACE)) {
             return LEFT_BRACE_KEYS;
         }

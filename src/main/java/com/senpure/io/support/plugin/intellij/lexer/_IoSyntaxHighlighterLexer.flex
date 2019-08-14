@@ -45,6 +45,7 @@ CODE_COMMENT=#[^\r\n]*
 %state IMPORT_TAG
 %state NAMEPACE_TAG
 %state JAVA_PACK_TAG
+%state LUA_NAMESPACE_TAG
 %state ENTITY_TAG
 %%
 <YYINITIAL,ENTITY_TAG> {
@@ -54,6 +55,7 @@ CODE_COMMENT=#[^\r\n]*
     "import"              {  yybegin(IMPORT_TAG);return  T_IMPORT_HEAD;}
     "namespace"           {  yybegin(NAMEPACE_TAG); return  T_NAMESPACE_HEAD;}
     "javaPack"            {  yybegin(JAVA_PACK_TAG); return  T_JAVA_PACK_HEAD;}
+   "luaNamespace"         {  yybegin(LUA_NAMESPACE_TAG); return  T_LUA_NAMESPACE_HEAD;}
    "message"              {  yybegin(MESSAGE_TAG); return  T_MESSAGE_HEAD; }
    "bean"                 {  yybegin(BEAN_TAG); return  T_BEAN_HEAD; }
    "event"                {  yybegin(EVENT_TAG); return  T_EVENT_HEAD; }
@@ -80,6 +82,12 @@ CODE_COMMENT=#[^\r\n]*
   {HEAD_VALUE}           { return T_JAVA_PACK_VALUE;}
   ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
  }
+ <LUA_NAMESPACE_TAG>
+ {
+   {WHITE_SPACE}          { return WHITE_SPACE; }
+   {HEAD_VALUE}           { return T_LUA_NAMESPACE_VALUE;}
+   ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
+  }
 <MESSAGE_TAG>
 {
    {WHITE_SPACE}          { return WHITE_SPACE; }

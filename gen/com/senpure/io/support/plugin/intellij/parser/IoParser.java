@@ -552,6 +552,43 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // T_LUA_NAMESPACE_VALUE
+  public static boolean luNamespaceValue(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "luNamespaceValue")) return false;
+    if (!nextTokenIs(b, T_LUA_NAMESPACE_VALUE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, T_LUA_NAMESPACE_VALUE);
+    exit_section_(b, m, LU_NAMESPACE_VALUE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // luaNamespace luaNamespaceValue semicolon
+  public static boolean luaNamespace(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "luaNamespace")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, LUA_NAMESPACE, "<lua namespace>");
+    r = luaNamespace(b, l + 1);
+    r = r && consumeToken(b, LUANAMESPACEVALUE);
+    r = r && semicolon(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // T_LUA_NAMESPACE_HEAD
+  public static boolean luaNamespaceHead(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "luaNamespaceHead")) return false;
+    if (!nextTokenIs(b, T_LUA_NAMESPACE_HEAD)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, T_LUA_NAMESPACE_HEAD);
+    exit_section_(b, m, LUA_NAMESPACE_HEAD, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // entityComment*
   //            messageHead messageType messageName messageId leftBrace
   //           field*

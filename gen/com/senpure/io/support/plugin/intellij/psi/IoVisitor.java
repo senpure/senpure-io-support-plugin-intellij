@@ -123,6 +123,18 @@ public class IoVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLuNamespaceValue(@NotNull IoLuNamespaceValue o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLuaNamespace(@NotNull IoLuaNamespace o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLuaNamespaceHead(@NotNull IoLuaNamespaceHead o) {
+    visitPsiElement(o);
+  }
+
   public void visitMessage(@NotNull IoMessage o) {
     visitPsiElement(o);
   }

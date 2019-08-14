@@ -115,6 +115,10 @@ namespaceValue ::=T_NAMESPACE_VALUE
 javaPack::=javaPackHead javaPackValue semicolon
 javaPackHead::=T_JAVA_PACK_HEAD
 javaPackValue::=T_JAVA_PACK_VALUE
+luaNamespace::=luaNamespace luaNamespaceValue semicolon
+luaNamespaceHead ::=T_LUA_NAMESPACE_HEAD
+luNamespaceValue ::=T_LUA_NAMESPACE_VALUE
+
 import::=importHead importValue semicolon
 importHead::=T_IMPORT_HEAD
 importValue::=T_IMPORT_VALUE

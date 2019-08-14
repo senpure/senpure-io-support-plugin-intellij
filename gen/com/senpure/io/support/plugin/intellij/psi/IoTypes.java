@@ -37,6 +37,9 @@ public interface IoTypes {
   IElementType JAVA_PACK_HEAD = new IoElementType("JAVA_PACK_HEAD");
   IElementType JAVA_PACK_VALUE = new IoElementType("JAVA_PACK_VALUE");
   IElementType LEFT_BRACE = new IoElementType("LEFT_BRACE");
+  IElementType LUA_NAMESPACE = new IoElementType("LUA_NAMESPACE");
+  IElementType LUA_NAMESPACE_HEAD = new IoElementType("LUA_NAMESPACE_HEAD");
+  IElementType LU_NAMESPACE_VALUE = new IoElementType("LU_NAMESPACE_VALUE");
   IElementType MESSAGE = new IoElementType("MESSAGE");
   IElementType MESSAGE_HEAD = new IoElementType("MESSAGE_HEAD");
   IElementType MESSAGE_ID = new IoElementType("MESSAGE_ID");
@@ -48,6 +51,7 @@ public interface IoTypes {
   IElementType RIGHT_BRACE = new IoElementType("RIGHT_BRACE");
   IElementType SEMICOLON = new IoElementType("SEMICOLON");
 
+  IElementType LUANAMESPACEVALUE = new IoTokenType("luaNamespaceValue");
   IElementType T_BEAN_HEAD = new IoTokenType("T_BEAN_HEAD");
   IElementType T_BEAN_NAME = new IoTokenType("T_BEAN_NAME");
   IElementType T_CODE_COMMENT = new IoTokenType("T_CODE_COMMENT");
@@ -71,6 +75,8 @@ public interface IoTypes {
   IElementType T_LEFT_BRACE = new IoTokenType("{");
   IElementType T_LEFT_BRACKET = new IoTokenType("[");
   IElementType T_LINE_COMMENT = new IoTokenType("T_LINE_COMMENT");
+  IElementType T_LUA_NAMESPACE_HEAD = new IoTokenType("T_LUA_NAMESPACE_HEAD");
+  IElementType T_LUA_NAMESPACE_VALUE = new IoTokenType("T_LUA_NAMESPACE_VALUE");
   IElementType T_MESSAGE_HEAD = new IoTokenType("T_MESSAGE_HEAD");
   IElementType T_MESSAGE_ID = new IoTokenType("T_MESSAGE_ID");
   IElementType T_MESSAGE_NAME = new IoTokenType("T_MESSAGE_NAME");
@@ -171,6 +177,15 @@ public interface IoTypes {
       }
       else if (type == LEFT_BRACE) {
         return new IoLeftBraceImpl(node);
+      }
+      else if (type == LUA_NAMESPACE) {
+        return new IoLuaNamespaceImpl(node);
+      }
+      else if (type == LUA_NAMESPACE_HEAD) {
+        return new IoLuaNamespaceHeadImpl(node);
+      }
+      else if (type == LU_NAMESPACE_VALUE) {
+        return new IoLuNamespaceValueImpl(node);
       }
       else if (type == MESSAGE) {
         return new IoMessageImpl(node);
