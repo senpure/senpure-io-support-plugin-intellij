@@ -34,8 +34,9 @@ public class EveryHeadCompletionProvider extends CompletionProvider {
         result.addElement(LookupElementBuilder.create("bean"));
         result.addElement(LookupElementBuilder.create("enum"));
         result.addElement(LookupElementBuilder.create("event"));
+        result.addElement(LookupElementBuilder.create("namespace"));
         result.addElement(LookupElementBuilder.create("import"));
         result.addElement(LookupElementBuilder.create("javaPack"));
-        result.addElement(LookupElementBuilder.create("namespace"));
+        result.addElement(LookupElementBuilder.create("luaNamespace"));
     }
 }

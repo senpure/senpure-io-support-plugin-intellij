@@ -451,14 +451,15 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // import|javaPack|namespace
+  // import|javaPackage|namespace|luaNamespace
   public static boolean headContent(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "headContent")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, HEAD_CONTENT, "<head content>");
     r = import_$(b, l + 1);
-    if (!r) r = javaPack(b, l + 1);
+    if (!r) r = javaPackage(b, l + 1);
     if (!r) r = namespace(b, l + 1);
+    if (!r) r = luaNamespace(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -502,40 +503,40 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // javaPackHead javaPackValue semicolon
-  public static boolean javaPack(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "javaPack")) return false;
-    if (!nextTokenIs(b, T_JAVA_PACK_HEAD)) return false;
+  // javaPackageHead javaPackageValue semicolon
+  public static boolean javaPackage(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "javaPackage")) return false;
+    if (!nextTokenIs(b, T_JAVA_PACKAGE_HEAD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = javaPackHead(b, l + 1);
-    r = r && javaPackValue(b, l + 1);
+    r = javaPackageHead(b, l + 1);
+    r = r && javaPackageValue(b, l + 1);
     r = r && semicolon(b, l + 1);
-    exit_section_(b, m, JAVA_PACK, r);
+    exit_section_(b, m, JAVA_PACKAGE, r);
     return r;
   }
 
   /* ********************************************************** */
-  // T_JAVA_PACK_HEAD
-  public static boolean javaPackHead(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "javaPackHead")) return false;
-    if (!nextTokenIs(b, T_JAVA_PACK_HEAD)) return false;
+  // T_JAVA_PACKAGE_HEAD
+  public static boolean javaPackageHead(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "javaPackageHead")) return false;
+    if (!nextTokenIs(b, T_JAVA_PACKAGE_HEAD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, T_JAVA_PACK_HEAD);
-    exit_section_(b, m, JAVA_PACK_HEAD, r);
+    r = consumeToken(b, T_JAVA_PACKAGE_HEAD);
+    exit_section_(b, m, JAVA_PACKAGE_HEAD, r);
     return r;
   }
 
   /* ********************************************************** */
-  // T_JAVA_PACK_VALUE
-  public static boolean javaPackValue(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "javaPackValue")) return false;
-    if (!nextTokenIs(b, T_JAVA_PACK_VALUE)) return false;
+  // T_JAVA_PACKAGE_VALUE
+  public static boolean javaPackageValue(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "javaPackageValue")) return false;
+    if (!nextTokenIs(b, T_JAVA_PACKAGE_VALUE)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, T_JAVA_PACK_VALUE);
-    exit_section_(b, m, JAVA_PACK_VALUE, r);
+    r = consumeToken(b, T_JAVA_PACKAGE_VALUE);
+    exit_section_(b, m, JAVA_PACKAGE_VALUE, r);
     return r;
   }
 
@@ -552,27 +553,16 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // T_LUA_NAMESPACE_VALUE
-  public static boolean luNamespaceValue(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "luNamespaceValue")) return false;
-    if (!nextTokenIs(b, T_LUA_NAMESPACE_VALUE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, T_LUA_NAMESPACE_VALUE);
-    exit_section_(b, m, LU_NAMESPACE_VALUE, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // luaNamespace luaNamespaceValue semicolon
+  // luaNamespaceHead luaNamespaceValue semicolon
   public static boolean luaNamespace(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "luaNamespace")) return false;
+    if (!nextTokenIs(b, T_LUA_NAMESPACE_HEAD)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, LUA_NAMESPACE, "<lua namespace>");
-    r = luaNamespace(b, l + 1);
-    r = r && consumeToken(b, LUANAMESPACEVALUE);
+    Marker m = enter_section_(b);
+    r = luaNamespaceHead(b, l + 1);
+    r = r && luaNamespaceValue(b, l + 1);
     r = r && semicolon(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
+    exit_section_(b, m, LUA_NAMESPACE, r);
     return r;
   }
 
@@ -585,6 +575,18 @@ public class IoParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, T_LUA_NAMESPACE_HEAD);
     exit_section_(b, m, LUA_NAMESPACE_HEAD, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // T_LUA_NAMESPACE_VALUE
+  public static boolean luaNamespaceValue(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "luaNamespaceValue")) return false;
+    if (!nextTokenIs(b, T_LUA_NAMESPACE_VALUE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, T_LUA_NAMESPACE_VALUE);
+    exit_section_(b, m, LUA_NAMESPACE_VALUE, r);
     return r;
   }
 

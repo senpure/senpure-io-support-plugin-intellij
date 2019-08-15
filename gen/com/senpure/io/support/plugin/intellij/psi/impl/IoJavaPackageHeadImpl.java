@@ -11,14 +11,14 @@ import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.senpure.io.support.plugin.intellij.psi.*;
 
-public class IoJavaPackHeadImpl extends ASTWrapperPsiElement implements IoJavaPackHead {
+public class IoJavaPackageHeadImpl extends ASTWrapperPsiElement implements IoJavaPackageHead {
 
-  public IoJavaPackHeadImpl(@NotNull ASTNode node) {
+  public IoJavaPackageHeadImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull IoVisitor visitor) {
-    visitor.visitJavaPackHead(this);
+    visitor.visitJavaPackageHead(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

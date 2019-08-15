@@ -45,11 +45,12 @@ public class IoFormattingModelBuilder implements FormattingModelBuilder {
 
     public static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
         return new SpacingBuilder(settings, IoLanguage.INSTANCE)
-
-                .after(IoTypes.NAMESPACE_HEAD).spacing(1, 1, 0, false, 0)
-                .after(IoTypes.IMPORT_HEAD).spacing(4, 4, 0, false, 0)
-                .after(IoTypes.JAVA_PACK_HEAD).spacing(2, 2, 0, false, 0)
-                .after(IoTypes.JAVA_PACK_VALUE).lineBreakOrForceSpace(false, false)
+               // .after(IoTypes.LUA_NAMESPACE_HEAD).spacing(1, 1, 0, false, 0)
+               // .after(IoTypes.NAMESPACE_HEAD).spacing(4, 4, 0, false, 0)
+               // .after(IoTypes.IMPORT_HEAD).spacing(7, 7, 0, false, 0)
+               // .after(IoTypes.JAVA_PACKAGE_HEAD).spacing(2, 2, 0, false, 0)
+                .after(IoTypes.JAVA_PACKAGE_VALUE).lineBreakOrForceSpace(false, false)
+                .after(IoTypes.LUA_NAMESPACE_VALUE).lineBreakOrForceSpace(false, false)
                 .after(IoTypes.IMPORT_VALUE).lineBreakOrForceSpace(false, false)
                 .after(IoTypes.NAMESPACE_VALUE).lineBreakOrForceSpace(false, false)
                 .after(IoTypes.HEAD_CONTENT).spacing(0, 0, 0, true, 0)

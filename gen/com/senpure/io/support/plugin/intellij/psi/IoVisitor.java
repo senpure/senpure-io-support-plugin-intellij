@@ -107,23 +107,19 @@ public class IoVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitJavaPack(@NotNull IoJavaPack o) {
+  public void visitJavaPackage(@NotNull IoJavaPackage o) {
     visitPsiElement(o);
   }
 
-  public void visitJavaPackHead(@NotNull IoJavaPackHead o) {
+  public void visitJavaPackageHead(@NotNull IoJavaPackageHead o) {
     visitPsiElement(o);
   }
 
-  public void visitJavaPackValue(@NotNull IoJavaPackValue o) {
+  public void visitJavaPackageValue(@NotNull IoJavaPackageValue o) {
     visitPsiElement(o);
   }
 
   public void visitLeftBrace(@NotNull IoLeftBrace o) {
-    visitPsiElement(o);
-  }
-
-  public void visitLuNamespaceValue(@NotNull IoLuNamespaceValue o) {
     visitPsiElement(o);
   }
 
@@ -132,6 +128,10 @@ public class IoVisitor extends PsiElementVisitor {
   }
 
   public void visitLuaNamespaceHead(@NotNull IoLuaNamespaceHead o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLuaNamespaceValue(@NotNull IoLuaNamespaceValue o) {
     visitPsiElement(o);
   }
 

@@ -37,8 +37,8 @@ public class IoColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("IO_IDENTIFIER", IoSyntaxHighlighter.IDENTIFIER),
             new AttributesDescriptor("IO_IMPORT_HEAD", IoSyntaxHighlighter.IMPORT_HEAD),
             new AttributesDescriptor("IO_IMPORT_VALUE", IoSyntaxHighlighter.IMPORT_VALUE),
-            new AttributesDescriptor("IO_JAVA_PACK_HEAD", IoSyntaxHighlighter.JAVA_PACK_HEAD),
-            new AttributesDescriptor("IO_JAVA_PACK_VALUE", IoSyntaxHighlighter.JAVA_PACK_VALUE),
+            new AttributesDescriptor("IO_JAVA_PACKAGE_HEAD", IoSyntaxHighlighter.JAVA_PACKAGE_HEAD),
+            new AttributesDescriptor("IO_JAVA_PACKAGE_VALUE", IoSyntaxHighlighter.JAVA_PACKAGE_VALUE),
             new AttributesDescriptor("IO_LEFT_BRACE", IoSyntaxHighlighter.LEFT_BRACE),
             new AttributesDescriptor("IO_LEFT_BRACKET", IoSyntaxHighlighter.LEFT_BRACKET),
             new AttributesDescriptor("IO_LINE_COMMENT", IoSyntaxHighlighter.LINE_COMMENT),
@@ -71,12 +71,12 @@ public class IoColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "namespace com.senpure.io.demo;\n" +
-                "javaPack  com.senpure.io.demo;\n" +
+        return "namespace    com.senpure.io.demo;\n" +
+                "javaPackage com.senpure.io.demo;\n" +
                 "import    hell2.io;\n" +
                 "\n" +
                 "#namespace 定义命名空间\n" +
-                "#javaPack  定义java代码的包\n" +
+                "#javaPackage  定义java代码的包\n" +
                 "#import    引用其他定义的文件\n" +
                 "\n" +
                 "#定义一个bean 省略 idnex\n" +

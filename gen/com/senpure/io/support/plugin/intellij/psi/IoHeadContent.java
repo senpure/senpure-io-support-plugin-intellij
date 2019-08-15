@@ -11,7 +11,10 @@ public interface IoHeadContent extends PsiElement {
   IoImport getImport();
 
   @Nullable
-  IoJavaPack getJavaPack();
+  IoJavaPackage getJavaPackage();
+
+  @Nullable
+  IoLuaNamespace getLuaNamespace();
 
   @Nullable
   IoNamespace getNamespace();

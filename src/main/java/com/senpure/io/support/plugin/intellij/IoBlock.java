@@ -13,6 +13,8 @@ import com.senpure.io.support.plugin.intellij.psi.IoFieldIndex;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
  * @time 2019-05-27 10:35:42
  */
 public class IoBlock extends AbstractBlock {
-    //private static final Logger logger = Logger.getInstance(IoBlock.class);
+    private Logger logger = LoggerFactory.getLogger(IoBlock.class);
     private final static Indent NONE_INDENT = Indent.getNoneIndent();
     private final static Indent DIRECT_NORMAL_INDENT = Indent.getNormalIndent(true);
     private final static Indent SAME_AS_PARENT_INDENT = Indent.getSpaceIndent(0, true);
@@ -33,9 +35,13 @@ public class IoBlock extends AbstractBlock {
     private Indent childIndent;
     private CodeStyleSettings settings;
     private static TokenSet ENTITY = TokenSet.create(IoTypes.MESSAGE, IoTypes.BEAN, IoTypes.ENUM, IoTypes.EVENT);
-    private static TokenSet FIELD = TokenSet.create(IoTypes.FIELD, IoTypes.ENUM_FIELD);
-    private static TokenSet HEAD = TokenSet.create(IoTypes.HEAD_CONTENT, IoTypes.NAMESPACE, IoTypes.IMPORT, IoTypes.JAVA_PACK);
-
+    private static TokenSet FIELDS = TokenSet.create(IoTypes.FIELD, IoTypes.ENUM_FIELD);
+    private static TokenSet EXACT_HEADS = TokenSet.create(IoTypes.IMPORT_HEAD, IoTypes.NAMESPACE_HEAD,
+            IoTypes.JAVA_PACKAGE_HEAD, IoTypes.LUA_NAMESPACE_HEAD);
+    private static TokenSet HEAD_CONTENT = TokenSet.create(IoTypes.HEAD_CONTENT);
+    private static TokenSet EXACT_HEAD_CONTENTS = TokenSet.create(
+            IoTypes.IMPORT, IoTypes.NAMESPACE,
+            IoTypes.JAVA_PACKAGE, IoTypes.LUA_NAMESPACE);
     protected IoBlock(@NotNull ASTNode node, @Nullable Wrap wrap, CodeStyleSettings settings, SpacingBuilder spacingBuilder) {
         super(node, wrap, computeAlignment(node));
         // this.spacingBuilder = spacingBuilder;
@@ -102,7 +108,28 @@ public class IoBlock extends AbstractBlock {
         } else if (myNode.getElementType().equals(IoTypes.ENUM_FIELD)) {
             spacingBuilder = enumFieldSpacingBuilder();
 
+        } else if (EXACT_HEAD_CONTENTS.contains(myNode.getElementType())) {
+
+           // logger.debug("{}", myNode.getText());
+            ASTNode myChild = myNode.getFirstChildNode();
+            int myLen = myChild.getText().length();
+            ASTNode entity = myNode.getTreeParent().getTreeParent();
+            //logger.debug("entity {}", entity.getText());
+            ASTNode[] astNodes = entity.getChildren(HEAD_CONTENT);
+
+            int maxLen = 0;
+            for (ASTNode astNode : astNodes) {
+               // logger.debug("EXACT {}", astNode.getText());
+                ASTNode exactHead = astNode.getFirstChildNode().getFirstChildNode();
+                int len = exactHead.getText().length();
+                maxLen = len > maxLen ? len : maxLen;
+            }
+            //logger.debug("max {}  my {} ,type {}", maxLen, myLen, myChild.getElementType());
+            spacingBuilder = new SpacingBuilder(settings, IoLanguage.INSTANCE);
+           spacingBuilder.after(myChild.getElementType()).spacing(maxLen - myLen + 1, maxLen - myLen + 1, 0, false, 0);
+           // spacingBuilder.after(IoTypes.NAMESPACE_HEAD).spacing(2, 2, 0, false, 0);
         }
+
         if (spacingBuilder == null) {
             spacingBuilder = IoFormattingModelBuilder.normalSpacingBuilder;
         }
@@ -122,10 +149,10 @@ public class IoBlock extends AbstractBlock {
 
     private static Indent computeChildIndent(ASTNode node) {
         IElementType type = node.getElementType();
-      //  IElementType parent = node.getElementType();
+        //  IElementType parent = node.getElementType();
         if (ENTITY.contains(type)) {
             return DIRECT_NORMAL_INDENT;
-        } else if (FIELD.contains(type)) {
+        } else if (FIELDS.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
         return SAME_AS_PARENT_INDENT;
@@ -137,7 +164,7 @@ public class IoBlock extends AbstractBlock {
         // IElementType parent = node.getElementType();
         if (ENTITY.contains(type)) {
             return NONE_INDENT;
-        } else if (FIELD.contains(type)) {
+        } else if (FIELDS.contains(type)) {
             return DIRECT_NORMAL_INDENT;
         }
         return SAME_AS_PARENT_INDENT;

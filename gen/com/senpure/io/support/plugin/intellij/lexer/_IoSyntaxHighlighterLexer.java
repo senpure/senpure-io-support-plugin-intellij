@@ -34,7 +34,7 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
   public static final int ENUM_FIELD_TAG = 14;
   public static final int IMPORT_TAG = 16;
   public static final int NAMEPACE_TAG = 18;
-  public static final int JAVA_PACK_TAG = 20;
+  public static final int JAVA_PACKAGE_TAG = 20;
   public static final int LUA_NAMESPACE_TAG = 22;
   public static final int ENTITY_TAG = 24;
 
@@ -90,10 +90,10 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
     "\1\33\10\3\2\15\1\42\4\15\1\0\1\37\3\3"+
     "\1\43\1\3\1\44\2\3\3\15\1\45\1\37\3\3"+
     "\1\46\2\3\3\15\1\45\1\47\4\3\2\15\2\3"+
-    "\1\50\1\3\2\15\2\3\1\51\1\52\3\3\1\53";
+    "\1\50\1\3\2\15\3\3\1\51\5\3\1\52\1\53";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[154];
+    int [] result = new int[157];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -136,11 +136,11 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
     "\0\u12de\0\u08ce\0\u130c\0\u133a\0\u1368\0\u1396\0\u0284\0\u13c4"+
     "\0\u13f2\0\u1420\0\u144e\0\u147c\0\u0dd6\0\u0284\0\u14aa\0\u14d8"+
     "\0\u1506\0\u1534\0\u1562\0\u1590\0\u15be\0\u15ec\0\u0284\0\u161a"+
-    "\0\u1648\0\u1676\0\u16a4\0\u16d2\0\u0284\0\u0284\0\u1700\0\u172e"+
-    "\0\u175c\0\u0284";
+    "\0\u1648\0\u1676\0\u16a4\0\u16d2\0\u1700\0\u0284\0\u172e\0\u175c"+
+    "\0\u178a\0\u17b8\0\u17e6\0\u0284\0\u0284";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[154];
+    int [] result = new int[157];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -272,12 +272,14 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
     "\12\0\20\46\1\150\10\46\4\0\7\46\12\0\22\46"+
     "\1\150\6\46\4\0\7\46\12\0\15\17\1\226\13\17"+
     "\4\0\7\17\12\0\31\17\4\0\1\17\1\227\5\17"+
-    "\12\0\23\17\1\230\5\17\4\0\7\17\12\0\2\17"+
-    "\1\231\26\17\4\0\7\17\12\0\15\17\1\232\13\17"+
-    "\4\0\7\17\7\0";
+    "\12\0\23\17\1\230\5\17\4\0\7\17\12\0\23\17"+
+    "\1\231\5\17\4\0\7\17\12\0\12\17\1\232\16\17"+
+    "\4\0\7\17\12\0\2\17\1\233\26\17\4\0\7\17"+
+    "\12\0\15\17\1\234\13\17\4\0\7\17\12\0\15\17"+
+    "\1\235\13\17\4\0\7\17\7\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[6026];
+    int [] result = new int[6164];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -317,10 +319,10 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\14\0\1\11\13\1\5\11\24\1\1\11\4\1\1\11"+
     "\1\1\1\11\2\1\1\11\33\1\2\0\23\1\1\0"+
-    "\55\1";
+    "\60\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[154];
+    int [] result = new int[157];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -752,7 +754,7 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
             // fall through
           case 68: break;
           case 26: 
-            { return T_JAVA_PACK_VALUE;
+            { return T_JAVA_PACKAGE_VALUE;
             } 
             // fall through
           case 69: break;
@@ -827,12 +829,12 @@ public class _IoSyntaxHighlighterLexer implements FlexLexer {
             // fall through
           case 83: break;
           case 41: 
-            { yybegin(JAVA_PACK_TAG); return  T_JAVA_PACK_HEAD;
+            { yybegin(NAMEPACE_TAG); return  T_NAMESPACE_HEAD;
             } 
             // fall through
           case 84: break;
           case 42: 
-            { yybegin(NAMEPACE_TAG); return  T_NAMESPACE_HEAD;
+            { yybegin(JAVA_PACKAGE_TAG); return  T_JAVA_PACKAGE_HEAD;
             } 
             // fall through
           case 85: break;

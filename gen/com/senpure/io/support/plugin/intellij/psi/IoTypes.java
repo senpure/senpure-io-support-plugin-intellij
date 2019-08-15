@@ -33,13 +33,13 @@ public interface IoTypes {
   IElementType IMPORT = new IoElementType("IMPORT");
   IElementType IMPORT_HEAD = new IoElementType("IMPORT_HEAD");
   IElementType IMPORT_VALUE = new IoElementType("IMPORT_VALUE");
-  IElementType JAVA_PACK = new IoElementType("JAVA_PACK");
-  IElementType JAVA_PACK_HEAD = new IoElementType("JAVA_PACK_HEAD");
-  IElementType JAVA_PACK_VALUE = new IoElementType("JAVA_PACK_VALUE");
+  IElementType JAVA_PACKAGE = new IoElementType("JAVA_PACKAGE");
+  IElementType JAVA_PACKAGE_HEAD = new IoElementType("JAVA_PACKAGE_HEAD");
+  IElementType JAVA_PACKAGE_VALUE = new IoElementType("JAVA_PACKAGE_VALUE");
   IElementType LEFT_BRACE = new IoElementType("LEFT_BRACE");
   IElementType LUA_NAMESPACE = new IoElementType("LUA_NAMESPACE");
   IElementType LUA_NAMESPACE_HEAD = new IoElementType("LUA_NAMESPACE_HEAD");
-  IElementType LU_NAMESPACE_VALUE = new IoElementType("LU_NAMESPACE_VALUE");
+  IElementType LUA_NAMESPACE_VALUE = new IoElementType("LUA_NAMESPACE_VALUE");
   IElementType MESSAGE = new IoElementType("MESSAGE");
   IElementType MESSAGE_HEAD = new IoElementType("MESSAGE_HEAD");
   IElementType MESSAGE_ID = new IoElementType("MESSAGE_ID");
@@ -51,7 +51,6 @@ public interface IoTypes {
   IElementType RIGHT_BRACE = new IoElementType("RIGHT_BRACE");
   IElementType SEMICOLON = new IoElementType("SEMICOLON");
 
-  IElementType LUANAMESPACEVALUE = new IoTokenType("luaNamespaceValue");
   IElementType T_BEAN_HEAD = new IoTokenType("T_BEAN_HEAD");
   IElementType T_BEAN_NAME = new IoTokenType("T_BEAN_NAME");
   IElementType T_CODE_COMMENT = new IoTokenType("T_CODE_COMMENT");
@@ -70,8 +69,8 @@ public interface IoTypes {
   IElementType T_IDENTIFIER = new IoTokenType("T_IDENTIFIER");
   IElementType T_IMPORT_HEAD = new IoTokenType("T_IMPORT_HEAD");
   IElementType T_IMPORT_VALUE = new IoTokenType("T_IMPORT_VALUE");
-  IElementType T_JAVA_PACK_HEAD = new IoTokenType("T_JAVA_PACK_HEAD");
-  IElementType T_JAVA_PACK_VALUE = new IoTokenType("T_JAVA_PACK_VALUE");
+  IElementType T_JAVA_PACKAGE_HEAD = new IoTokenType("T_JAVA_PACKAGE_HEAD");
+  IElementType T_JAVA_PACKAGE_VALUE = new IoTokenType("T_JAVA_PACKAGE_VALUE");
   IElementType T_LEFT_BRACE = new IoTokenType("{");
   IElementType T_LEFT_BRACKET = new IoTokenType("[");
   IElementType T_LINE_COMMENT = new IoTokenType("T_LINE_COMMENT");
@@ -166,14 +165,14 @@ public interface IoTypes {
       else if (type == IMPORT_VALUE) {
         return new IoImportValueImpl(node);
       }
-      else if (type == JAVA_PACK) {
-        return new IoJavaPackImpl(node);
+      else if (type == JAVA_PACKAGE) {
+        return new IoJavaPackageImpl(node);
       }
-      else if (type == JAVA_PACK_HEAD) {
-        return new IoJavaPackHeadImpl(node);
+      else if (type == JAVA_PACKAGE_HEAD) {
+        return new IoJavaPackageHeadImpl(node);
       }
-      else if (type == JAVA_PACK_VALUE) {
-        return new IoJavaPackValueImpl(node);
+      else if (type == JAVA_PACKAGE_VALUE) {
+        return new IoJavaPackageValueImpl(node);
       }
       else if (type == LEFT_BRACE) {
         return new IoLeftBraceImpl(node);
@@ -184,8 +183,8 @@ public interface IoTypes {
       else if (type == LUA_NAMESPACE_HEAD) {
         return new IoLuaNamespaceHeadImpl(node);
       }
-      else if (type == LU_NAMESPACE_VALUE) {
-        return new IoLuNamespaceValueImpl(node);
+      else if (type == LUA_NAMESPACE_VALUE) {
+        return new IoLuaNamespaceValueImpl(node);
       }
       else if (type == MESSAGE) {
         return new IoMessageImpl(node);

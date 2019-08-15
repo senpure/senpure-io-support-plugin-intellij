@@ -59,9 +59,8 @@ T_CODE_COMMENT=#[^\r\n]*
   "T_ENUM_NAME"              { return T_ENUM_NAME; }
   "T_NAMESPACE_HEAD"         { return T_NAMESPACE_HEAD; }
   "T_NAMESPACE_VALUE"        { return T_NAMESPACE_VALUE; }
-  "T_JAVA_PACK_HEAD"         { return T_JAVA_PACK_HEAD; }
-  "T_JAVA_PACK_VALUE"        { return T_JAVA_PACK_VALUE; }
-  "luaNamespaceValue"        { return LUANAMESPACEVALUE; }
+  "T_JAVA_PACKAGE_HEAD"      { return T_JAVA_PACKAGE_HEAD; }
+  "T_JAVA_PACKAGE_VALUE"     { return T_JAVA_PACKAGE_VALUE; }
   "T_LUA_NAMESPACE_HEAD"     { return T_LUA_NAMESPACE_HEAD; }
   "T_LUA_NAMESPACE_VALUE"    { return T_LUA_NAMESPACE_VALUE; }
   "T_IMPORT_HEAD"            { return T_IMPORT_HEAD; }

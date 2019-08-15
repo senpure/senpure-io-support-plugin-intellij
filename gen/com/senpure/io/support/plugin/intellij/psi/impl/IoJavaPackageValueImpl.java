@@ -11,43 +11,19 @@ import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.senpure.io.support.plugin.intellij.psi.*;
 
-public class IoHeadContentImpl extends ASTWrapperPsiElement implements IoHeadContent {
+public class IoJavaPackageValueImpl extends ASTWrapperPsiElement implements IoJavaPackageValue {
 
-  public IoHeadContentImpl(@NotNull ASTNode node) {
+  public IoJavaPackageValueImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull IoVisitor visitor) {
-    visitor.visitHeadContent(this);
+    visitor.visitJavaPackageValue(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof IoVisitor) accept((IoVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public IoImport getImport() {
-    return findChildByClass(IoImport.class);
-  }
-
-  @Override
-  @Nullable
-  public IoJavaPackage getJavaPackage() {
-    return findChildByClass(IoJavaPackage.class);
-  }
-
-  @Override
-  @Nullable
-  public IoLuaNamespace getLuaNamespace() {
-    return findChildByClass(IoLuaNamespace.class);
-  }
-
-  @Override
-  @Nullable
-  public IoNamespace getNamespace() {
-    return findChildByClass(IoNamespace.class);
   }
 
 }

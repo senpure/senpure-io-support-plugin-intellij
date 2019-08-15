@@ -85,12 +85,12 @@
             <option name="FOREGROUND" value="#AAAAAA"/>
         </value>
     </option>
-    <option name="IO_JAVA_PACK_HEAD">
+    <option name="IO_JAVA_PACKAGE_HEAD">
         <value>
             <option name="FOREGROUND" value="#cc7832"/>
         </value>
     </option>
-    <option name="IO_JAVA_PACK_VALUE">
+    <option name="IO_JAVA_PACKAGE_VALUE">
         <value>
             <option name="FOREGROUND" value="#AAAAAA"/>
         </value>

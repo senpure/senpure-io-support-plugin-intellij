@@ -5,15 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface IoJavaPack extends PsiElement {
-
-  @NotNull
-  IoJavaPackHead getJavaPackHead();
-
-  @NotNull
-  IoJavaPackValue getJavaPackValue();
-
-  @NotNull
-  IoSemicolon getSemicolon();
+public interface IoJavaPackageValue extends PsiElement {
 
 }

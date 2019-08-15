@@ -11,14 +11,14 @@ import static com.senpure.io.support.plugin.intellij.psi.IoTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.senpure.io.support.plugin.intellij.psi.*;
 
-public class IoHeadContentImpl extends ASTWrapperPsiElement implements IoHeadContent {
+public class IoLuaNamespaceImpl extends ASTWrapperPsiElement implements IoLuaNamespace {
 
-  public IoHeadContentImpl(@NotNull ASTNode node) {
+  public IoLuaNamespaceImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull IoVisitor visitor) {
-    visitor.visitHeadContent(this);
+    visitor.visitLuaNamespace(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,27 +27,21 @@ public class IoHeadContentImpl extends ASTWrapperPsiElement implements IoHeadCon
   }
 
   @Override
-  @Nullable
-  public IoImport getImport() {
-    return findChildByClass(IoImport.class);
+  @NotNull
+  public IoLuaNamespaceHead getLuaNamespaceHead() {
+    return findNotNullChildByClass(IoLuaNamespaceHead.class);
   }
 
   @Override
-  @Nullable
-  public IoJavaPackage getJavaPackage() {
-    return findChildByClass(IoJavaPackage.class);
+  @NotNull
+  public IoLuaNamespaceValue getLuaNamespaceValue() {
+    return findNotNullChildByClass(IoLuaNamespaceValue.class);
   }
 
   @Override
-  @Nullable
-  public IoLuaNamespace getLuaNamespace() {
-    return findChildByClass(IoLuaNamespace.class);
-  }
-
-  @Override
-  @Nullable
-  public IoNamespace getNamespace() {
-    return findChildByClass(IoNamespace.class);
+  @NotNull
+  public IoSemicolon getSemicolon() {
+    return findNotNullChildByClass(IoSemicolon.class);
   }
 
 }
