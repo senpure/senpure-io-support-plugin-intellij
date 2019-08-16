@@ -151,14 +151,20 @@ public class MessageCompletionProvider extends CompletionProvider {
         if (typeNode != null) {
             type = typeNode.getText();
         }
+        boolean add = true;
         for (Message single : singles) {
             if (!single.getType().equalsIgnoreCase(type)) {
+                if (add && extra) {
+                    if (single.getName().startsWith(text)) {
+                        add = false;
+                    }
+                }
                 result.addElement(LookupElementBuilder.create(single.getName()));
             }
         }
 //        if (singles.size() == 0) {
 //        }
-        boolean add = true;
+
         for (Bean bean : reader.getBeans()) {
             boolean not = true;
             for (Message message : messages) {
