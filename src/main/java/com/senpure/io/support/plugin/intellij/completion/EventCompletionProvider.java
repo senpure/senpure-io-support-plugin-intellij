@@ -94,6 +94,8 @@ public class EventCompletionProvider extends CompletionProvider {
         String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
         boolean extra = false;
         if (text.length() > 0) {
+
+            text = StringUtil.toUpperFirstLetter(text);
             extra = true;
         }
 
@@ -122,7 +124,7 @@ public class EventCompletionProvider extends CompletionProvider {
         }
 
         if (add && extra) {
-            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+            result.addElement(LookupElementBuilder.create(text));
         }
     }
 

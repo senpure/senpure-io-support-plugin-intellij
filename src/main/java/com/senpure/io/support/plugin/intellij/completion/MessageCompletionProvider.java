@@ -113,6 +113,7 @@ public class MessageCompletionProvider extends CompletionProvider {
         boolean extra = false;
         if (text.length() > 0) {
             extra = true;
+            text=StringUtil.toUpperFirstLetter(text);
         }
         IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
@@ -120,7 +121,7 @@ public class MessageCompletionProvider extends CompletionProvider {
                 .getPath());
         if (reader == null) {
             if (extra) {
-                result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+                result.addElement(LookupElementBuilder.create(text));
             }
             return;
         }
@@ -183,7 +184,7 @@ public class MessageCompletionProvider extends CompletionProvider {
             }
         }
         if (add && extra) {
-            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+            result.addElement(LookupElementBuilder.create(text));
         }
 
     }
