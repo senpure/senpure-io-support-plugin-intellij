@@ -10,6 +10,7 @@ import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
+import com.senpure.base.util.StringUtil;
 import com.senpure.io.generator.model.Bean;
 import com.senpure.io.generator.model.Event;
 import com.senpure.io.generator.reader.IoProtocolReader;
@@ -90,6 +91,11 @@ public class EventCompletionProvider extends CompletionProvider {
     }
 
     public void eventName(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+
+        String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
+        if (text.length() > 0) {
+            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+        }
         IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()

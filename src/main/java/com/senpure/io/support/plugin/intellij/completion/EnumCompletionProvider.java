@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
+import com.senpure.base.util.StringUtil;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +46,12 @@ public class EnumCompletionProvider extends CompletionProvider {
                     result.addElement(builder);
                 }
 
+            }
+        }
+        else {
+            String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
+            if (text.length() > 0) {
+                result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
             }
         }
     }
