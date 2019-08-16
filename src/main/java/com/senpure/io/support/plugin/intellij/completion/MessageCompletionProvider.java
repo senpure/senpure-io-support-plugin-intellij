@@ -110,16 +110,21 @@ public class MessageCompletionProvider extends CompletionProvider {
 
     public void messageName(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
+        boolean extra = false;
         if (text.length() > 0) {
-            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+            extra = true;
         }
         IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());
         if (reader == null) {
+            if (extra) {
+                result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+            }
             return;
         }
+
         List<Message> messages = reader.getMessages();
         List<Message> singles = new ArrayList<>();
         for (int i = 0; i < messages.size(); i++) {
@@ -153,6 +158,7 @@ public class MessageCompletionProvider extends CompletionProvider {
         }
 //        if (singles.size() == 0) {
 //        }
+        boolean add = true;
         for (Bean bean : reader.getBeans()) {
             boolean not = true;
             for (Message message : messages) {
@@ -162,8 +168,16 @@ public class MessageCompletionProvider extends CompletionProvider {
                 }
             }
             if (not) {
+                if (add && extra) {
+                    if (bean.getName().startsWith(text)) {
+                        add = false;
+                    }
+                }
                 result.addElement(LookupElementBuilder.create(bean.getName()));
             }
+        }
+        if (add && extra) {
+            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
         }
 
     }

@@ -55,7 +55,7 @@ public class EventCompletionProvider extends CompletionProvider {
             if (preNode != null) {
                 preType = preNode.getElementType();
 
-              if (preType.equals(IoTypes.T_EVENT_NAME)
+                if (preType.equals(IoTypes.T_EVENT_NAME)
                         && parent.getNode().getTreePrev().getElementType().equals(TokenType.WHITE_SPACE)
                     // && (nextNode == null || nextNode.getElementType().equals(IoTypes.T_MESSAGE_ID))
                 ) {
@@ -74,7 +74,7 @@ public class EventCompletionProvider extends CompletionProvider {
                 }
             }
         }
-       if (eventName) {
+        if (eventName) {
             eventName(parameters, result);
         } else if (eventId) {
             eventId(parameters, result);
@@ -91,30 +91,41 @@ public class EventCompletionProvider extends CompletionProvider {
     }
 
     public void eventName(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-
         String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
+        boolean extra = false;
         if (text.length() > 0) {
-            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+            extra = true;
         }
+
         IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());
+        boolean add = true;
         List<Event> events = reader.getEvents();
-            for (Bean bean : reader.getBeans()) {
-                boolean add = true;
-                for (Event event : events) {
-                    if (Objects.equals(bean.getName(), event.getName())) {
-                        add=false;
-                        break;
-                    }
-                }
-                if (add) {
-                    result.addElement(LookupElementBuilder.create(bean.getName()));
+        for (Bean bean : reader.getBeans()) {
+            boolean addName = true;
+            for (Event event : events) {
+                if (Objects.equals(bean.getName(), event.getName())) {
+                    addName = false;
+                    break;
                 }
             }
+            if (addName) {
+                if (add && extra) {
+                    if (bean.getName().startsWith(text)) {
+                        add = false;
+                    }
+                }
+                result.addElement(LookupElementBuilder.create(bean.getName()));
+            }
+        }
 
+        if (add && extra) {
+            result.addElement(LookupElementBuilder.create(StringUtil.toUpperFirstLetter(text)));
+        }
     }
+
     public void eventId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement parent = parameters.getPosition().getParent();
         ASTNode preNode = IoUtil.preEffectiveNode(parent.getNode());
@@ -124,11 +135,11 @@ public class EventCompletionProvider extends CompletionProvider {
                 .getVirtualFile()
                 .getPath()), preNode.getText());
         result.addElement(LookupElementBuilder.create(eventId));
-        result.addElement(LookupElementBuilder.create(eventId+" {\n}")
+        result.addElement(LookupElementBuilder.create(eventId + " {\n}")
                 .withBoldness(true)
                 .withTailText(" (补全括号) ", true)
                 .withInsertHandler((context, item) -> {
-                    parameters.getEditor().getCaretModel().moveToOffset((eventId+"").length()+parameters.getOffset() + 2);
+                    parameters.getEditor().getCaretModel().moveToOffset((eventId + "").length() + parameters.getOffset() + 2);
                     parameters.getEditor().getSelectionModel().selectLineAtCaret();
                     ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
                     processor.runWithoutProgress();
