@@ -451,7 +451,7 @@ public class IoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // import|javaPackage|namespace|luaNamespace
+  // import|javaPackage|namespace|luaNamespace|jsNamespace
   public static boolean headContent(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "headContent")) return false;
     boolean r;
@@ -460,6 +460,7 @@ public class IoParser implements PsiParser, LightPsiParser {
     if (!r) r = javaPackage(b, l + 1);
     if (!r) r = namespace(b, l + 1);
     if (!r) r = luaNamespace(b, l + 1);
+    if (!r) r = jsNamespace(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -537,6 +538,44 @@ public class IoParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, T_JAVA_PACKAGE_VALUE);
     exit_section_(b, m, JAVA_PACKAGE_VALUE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // jsNamespaceHead jsNamespaceValue semicolon
+  public static boolean jsNamespace(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jsNamespace")) return false;
+    if (!nextTokenIs(b, T_JS_NAMESPACE_HEAD)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = jsNamespaceHead(b, l + 1);
+    r = r && jsNamespaceValue(b, l + 1);
+    r = r && semicolon(b, l + 1);
+    exit_section_(b, m, JS_NAMESPACE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // T_JS_NAMESPACE_HEAD
+  public static boolean jsNamespaceHead(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jsNamespaceHead")) return false;
+    if (!nextTokenIs(b, T_JS_NAMESPACE_HEAD)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, T_JS_NAMESPACE_HEAD);
+    exit_section_(b, m, JS_NAMESPACE_HEAD, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // T_JS_NAMESPACE_VALUE
+  public static boolean jsNamespaceValue(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jsNamespaceValue")) return false;
+    if (!nextTokenIs(b, T_JS_NAMESPACE_VALUE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, T_JS_NAMESPACE_VALUE);
+    exit_section_(b, m, JS_NAMESPACE_VALUE, r);
     return r;
   }
 

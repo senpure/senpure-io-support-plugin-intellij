@@ -106,6 +106,17 @@
         </value>
     </option>
 
+    <option name="IO_JS_NAMESPACE_HEAD">
+        <value>
+            <option name="FOREGROUND" value="#cc7832"/>
+        </value>
+    </option>
+    <option name="IO_JS_NAMESPACE_VALUE">
+        <value>
+            <option name="FOREGROUND" value="#AAAAAA"/>
+        </value>
+    </option>
+
     <option name="IO_LEFT_BRACE">
         <value>
             <option name="FOREGROUND" value="#AAAAAA"/>

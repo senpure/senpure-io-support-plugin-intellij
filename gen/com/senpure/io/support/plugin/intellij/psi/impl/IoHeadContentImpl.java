@@ -40,6 +40,12 @@ public class IoHeadContentImpl extends ASTWrapperPsiElement implements IoHeadCon
 
   @Override
   @Nullable
+  public IoJsNamespace getJsNamespace() {
+    return findChildByClass(IoJsNamespace.class);
+  }
+
+  @Override
+  @Nullable
   public IoLuaNamespace getLuaNamespace() {
     return findChildByClass(IoLuaNamespace.class);
   }

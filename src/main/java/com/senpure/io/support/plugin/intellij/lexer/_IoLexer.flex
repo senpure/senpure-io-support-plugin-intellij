@@ -28,7 +28,7 @@ WHITE_SPACE=\s+
 T_MESSAGE_TYPE_CS=CS|cs
 T_MESSAGE_TYPE_SC=SC|sc
 T_DIGIT=[0-9]+
-T_FIELD_TYPE_BASE=int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|String|string
+T_FIELD_TYPE_BASE=int|long|sint|slong|fixed32|fixed64|float|double|boolean|String|string
 T_IDENTIFIER=[a-zA-Z][a-zA-Z0-9_]*
 T_LINE_COMMENT="//"[^\r\n]*
 T_CODE_COMMENT=#[^\r\n]*
@@ -63,6 +63,8 @@ T_CODE_COMMENT=#[^\r\n]*
   "T_JAVA_PACKAGE_VALUE"     { return T_JAVA_PACKAGE_VALUE; }
   "T_LUA_NAMESPACE_HEAD"     { return T_LUA_NAMESPACE_HEAD; }
   "T_LUA_NAMESPACE_VALUE"    { return T_LUA_NAMESPACE_VALUE; }
+  "T_JS_NAMESPACE_HEAD"      { return T_JS_NAMESPACE_HEAD; }
+  "T_JS_NAMESPACE_VALUE"     { return T_JS_NAMESPACE_VALUE; }
   "T_IMPORT_HEAD"            { return T_IMPORT_HEAD; }
   "T_IMPORT_VALUE"           { return T_IMPORT_VALUE; }
 

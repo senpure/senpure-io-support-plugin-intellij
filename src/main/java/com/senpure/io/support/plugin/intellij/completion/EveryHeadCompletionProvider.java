@@ -38,5 +38,6 @@ public class EveryHeadCompletionProvider extends CompletionProvider {
         result.addElement(LookupElementBuilder.create("import"));
         result.addElement(LookupElementBuilder.create("javaPackage"));
         result.addElement(LookupElementBuilder.create("luaNamespace"));
+        result.addElement(LookupElementBuilder.create("jsNamespace"));
     }
 }

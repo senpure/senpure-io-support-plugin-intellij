@@ -29,7 +29,7 @@ WHITE_SPACE=\s+
 MESSAGE_TYPE_CS=CS|cs
 MESSAGE_TYPE_SC=SC|sc
 DIGIT=[0-9]+
-FIELD_TYPE_BASE=int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|String|string
+FIELD_TYPE_BASE=int|long|sint|slong|fixed32|fixed64|float|double|boolean|String|string
 IDENTIFIER=[a-zA-Z][a-zA-Z0-9_]*
 HEAD_VALUE=[a-zA-Z0-9_\./\\]+
 IMPORT_VALUE=[a-zA-Z0-9\-_\./\\]+
@@ -46,6 +46,7 @@ CODE_COMMENT=#[^\r\n]*
 %state NAMEPACE_TAG
 %state JAVA_PACKAGE_TAG
 %state LUA_NAMESPACE_TAG
+%state JS_NAMESPACE_TAG
 %state ENTITY_TAG
 %%
 <YYINITIAL,ENTITY_TAG> {
@@ -56,6 +57,7 @@ CODE_COMMENT=#[^\r\n]*
     "namespace"           {  yybegin(NAMEPACE_TAG); return  T_NAMESPACE_HEAD;}
     "javaPackage"         {  yybegin(JAVA_PACKAGE_TAG); return  T_JAVA_PACKAGE_HEAD;}
    "luaNamespace"         {  yybegin(LUA_NAMESPACE_TAG); return  T_LUA_NAMESPACE_HEAD;}
+    "jsNamespace"         {  yybegin(JS_NAMESPACE_TAG); return  T_JS_NAMESPACE_HEAD;}
    "message"              {  yybegin(MESSAGE_TAG); return  T_MESSAGE_HEAD; }
    "bean"                 {  yybegin(BEAN_TAG); return  T_BEAN_HEAD; }
    "event"                {  yybegin(EVENT_TAG); return  T_EVENT_HEAD; }
@@ -88,6 +90,12 @@ CODE_COMMENT=#[^\r\n]*
    {HEAD_VALUE}           { return T_LUA_NAMESPACE_VALUE;}
    ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
   }
+   <JS_NAMESPACE_TAG>
+   {
+     {WHITE_SPACE}          { return WHITE_SPACE; }
+     {HEAD_VALUE}           { return T_JS_NAMESPACE_VALUE;}
+     ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
+    }
 <MESSAGE_TAG>
 {
    {WHITE_SPACE}          { return WHITE_SPACE; }

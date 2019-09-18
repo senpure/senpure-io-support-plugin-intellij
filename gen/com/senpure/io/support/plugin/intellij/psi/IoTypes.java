@@ -36,6 +36,9 @@ public interface IoTypes {
   IElementType JAVA_PACKAGE = new IoElementType("JAVA_PACKAGE");
   IElementType JAVA_PACKAGE_HEAD = new IoElementType("JAVA_PACKAGE_HEAD");
   IElementType JAVA_PACKAGE_VALUE = new IoElementType("JAVA_PACKAGE_VALUE");
+  IElementType JS_NAMESPACE = new IoElementType("JS_NAMESPACE");
+  IElementType JS_NAMESPACE_HEAD = new IoElementType("JS_NAMESPACE_HEAD");
+  IElementType JS_NAMESPACE_VALUE = new IoElementType("JS_NAMESPACE_VALUE");
   IElementType LEFT_BRACE = new IoElementType("LEFT_BRACE");
   IElementType LUA_NAMESPACE = new IoElementType("LUA_NAMESPACE");
   IElementType LUA_NAMESPACE_HEAD = new IoElementType("LUA_NAMESPACE_HEAD");
@@ -71,6 +74,8 @@ public interface IoTypes {
   IElementType T_IMPORT_VALUE = new IoTokenType("T_IMPORT_VALUE");
   IElementType T_JAVA_PACKAGE_HEAD = new IoTokenType("T_JAVA_PACKAGE_HEAD");
   IElementType T_JAVA_PACKAGE_VALUE = new IoTokenType("T_JAVA_PACKAGE_VALUE");
+  IElementType T_JS_NAMESPACE_HEAD = new IoTokenType("T_JS_NAMESPACE_HEAD");
+  IElementType T_JS_NAMESPACE_VALUE = new IoTokenType("T_JS_NAMESPACE_VALUE");
   IElementType T_LEFT_BRACE = new IoTokenType("{");
   IElementType T_LEFT_BRACKET = new IoTokenType("[");
   IElementType T_LINE_COMMENT = new IoTokenType("T_LINE_COMMENT");
@@ -173,6 +178,15 @@ public interface IoTypes {
       }
       else if (type == JAVA_PACKAGE_VALUE) {
         return new IoJavaPackageValueImpl(node);
+      }
+      else if (type == JS_NAMESPACE) {
+        return new IoJsNamespaceImpl(node);
+      }
+      else if (type == JS_NAMESPACE_HEAD) {
+        return new IoJsNamespaceHeadImpl(node);
+      }
+      else if (type == JS_NAMESPACE_VALUE) {
+        return new IoJsNamespaceValueImpl(node);
       }
       else if (type == LEFT_BRACE) {
         return new IoLeftBraceImpl(node);

@@ -119,6 +119,18 @@ public class IoVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitJsNamespace(@NotNull IoJsNamespace o) {
+    visitPsiElement(o);
+  }
+
+  public void visitJsNamespaceHead(@NotNull IoJsNamespaceHead o) {
+    visitPsiElement(o);
+  }
+
+  public void visitJsNamespaceValue(@NotNull IoJsNamespaceValue o) {
+    visitPsiElement(o);
+  }
+
   public void visitLeftBrace(@NotNull IoLeftBrace o) {
     visitPsiElement(o);
   }

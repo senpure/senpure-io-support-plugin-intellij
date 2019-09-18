@@ -25,7 +25,7 @@ tokens=[
     T_LEFT_BRACE="{"
     T_RIGHT_BRACE="}"
     T_DIGIT="regexp:[0-9]+"
-    T_FIELD_TYPE_BASE="regexp:int|long|sint|slong|sfixed32|sfixed64|float|double|boolean|String|string"
+    T_FIELD_TYPE_BASE="regexp:int|long|sint|slong|fixed32|fixed64|float|double|boolean|String|string"
     T_IDENTIFIER="regexp:[a-zA-Z][a-zA-Z0-9_]*"
     T_LINE_COMMENT="regexp://[^\r\n]*"
     T_CODE_COMMENT="regexp:#[^\r\n]*"
@@ -118,9 +118,12 @@ javaPackageValue::=T_JAVA_PACKAGE_VALUE
 luaNamespace::=luaNamespaceHead luaNamespaceValue semicolon
 luaNamespaceHead ::=T_LUA_NAMESPACE_HEAD
 luaNamespaceValue ::=T_LUA_NAMESPACE_VALUE
+jsNamespace::=jsNamespaceHead jsNamespaceValue semicolon
+jsNamespaceHead ::=T_JS_NAMESPACE_HEAD
+jsNamespaceValue ::=T_JS_NAMESPACE_VALUE
 
 import::=importHead importValue semicolon
 importHead::=T_IMPORT_HEAD
 importValue::=T_IMPORT_VALUE
-headContent::=import|javaPackage|namespace|luaNamespace
+headContent::=import|javaPackage|namespace|luaNamespace|jsNamespace
 
