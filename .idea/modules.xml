@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij.iml" filepath="$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij.iml" group="senpure-io-support-plugin-intellij" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij_main.iml" filepath="$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij_main.iml" group="senpure-io-support-plugin-intellij" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij_test.iml" filepath="$PROJECT_DIR$/.idea/modules/senpure-io-support-plugin-intellij_test.iml" group="senpure-io-support-plugin-intellij" />
+    </modules>
+  </component>
+</project>

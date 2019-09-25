@@ -1,0 +1,15 @@
+<application>
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping ext="lua" type="Groovy" />
+      <mapping pattern="*io" type="Io file" />
+      <removed_mapping ext="io" approved="true" type="Io file" />
+      <mapping ext="dat" type="PLAIN_TEXT" />
+      <mapping ext="proto" type="PLAIN_TEXT" />
+      <mapping ext="io" type="PLAIN_TEXT" />
+      <mapping ext="config" type="PLAIN_TEXT" />
+      <mapping ext="protocol" type="PLAIN_TEXT" />
+      <removed_mapping ext="io" approved="true" type="Io file" />
+    </extensionMap>
+  </component>
+</application>

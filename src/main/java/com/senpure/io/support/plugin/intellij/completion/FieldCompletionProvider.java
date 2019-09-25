@@ -35,7 +35,7 @@ public class FieldCompletionProvider extends CompletionProvider {
 
     }
 
-    String[] base = new String[]{"int", "long", "sint", "slong", "sfixed32", "sfixed64", "float", "double", "boolean", "String"};
+    String[] base = new String[]{"int", "long", "sint", "slong", "fixed32", "fixed64", "float", "double", "boolean", "String"};
 
     private boolean isBase(String text) {
         for (String s : base) {

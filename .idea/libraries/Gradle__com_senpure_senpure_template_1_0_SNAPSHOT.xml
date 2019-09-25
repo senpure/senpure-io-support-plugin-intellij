@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.senpure:senpure-template:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/senpure/senpure-template/1.0-SNAPSHOT/senpure-template-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/senpure/senpure-template/1.0-SNAPSHOT/senpure-template-1.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
