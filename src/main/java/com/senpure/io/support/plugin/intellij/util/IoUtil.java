@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -49,6 +51,10 @@ public class IoUtil {
     private static Map<String, Integer> namespaceMaxEventIdMap = new HashMap<>();
     private static int maxMessageId = 0;
     private static int maxEventId = 0;
+
+
+
+
 
     private static String getKey(String namespace, String messageType, String name) {
         return namespace + messageType + name;
@@ -161,20 +167,19 @@ public class IoUtil {
         return fileNamespaceMap.get(filePath);
     }
 
-    public static IElementType preEffectiveElementType(ASTNode node) {
-
-        ASTNode prev = node.getTreePrev();
-
-        if (prev == null) {
-            return null;
-        }
-        if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return preEffectiveElementType(prev);
-        }
-        return prev.getElementType();
+    public static IElementType getPreEffectiveSiblingElementType(ASTNode node) {
+        ASTNode pre = getPreEffectiveSibling(node);
+        return pre==null?null:  pre.getElementType() ;
     }
 
-    public static IElementType nexEffectiveElementType(ASTNode node) {
+
+    /**
+     * 获取下一个非 TokenType.WHITE_SPACE 节点
+     *
+     * @param node
+     * @return
+     */
+    public static ASTNode getNexEffectiveSibling(ASTNode node) {
 
         ASTNode prev = node.getTreeNext();
 
@@ -182,71 +187,48 @@ public class IoUtil {
             return null;
         }
         if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return nexEffectiveElementType(prev);
-        }
-        return prev.getElementType();
-    }
-
-    public static ASTNode nexEffectiveNode(ASTNode node) {
-
-        ASTNode prev = node.getTreeNext();
-
-        if (prev == null) {
-            return null;
-        }
-        if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return nexEffectiveNode(prev);
+            return getNexEffectiveSibling(prev);
         }
         return prev;
     }
 
-    public static ASTNode childEffectiveNode(ASTNode node) {
-
-        ASTNode prev = node.getFirstChildNode();
-
-        if (prev == null) {
-            return null;
-        }
-        if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return nexEffectiveNode(prev);
-        }
-        return prev;
+    /**
+     * 获取上一个非 TokenType.WHITE_SPACE 同级节点
+     *
+     * @param node
+     * @return
+     */
+    public static ASTNode getPreEffectiveSibling(ASTNode node) {
+        return getPreEffectiveSibling(node, 1);
     }
 
-    public static ASTNode preEffectiveNode(ASTNode node) {
+    /**
+     * 获取上{times} 个非 TokenType.WHITE_SPACE 同级节点
+     *
+     * @param node
+     * @param times
+     * @return
+     */
+    public static ASTNode getPreEffectiveSibling(ASTNode node, int times) {
 
+        return getPreEffectiveSibling(node, times, 0);
+    }
+
+    private static ASTNode getPreEffectiveSibling(ASTNode node, int times, int num) {
         ASTNode prev = node.getTreePrev();
-
         if (prev == null) {
             return null;
         }
         if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return preEffectiveNode(prev);
-        }
-        return prev;
-    }
-
-    private static ASTNode preEffectiveNode(ASTNode node, int times, int num) {
-        ASTNode prev = node.getTreePrev();
-
-        if (prev == null) {
-            return null;
-        }
-        if (prev.getElementType().equals(TokenType.WHITE_SPACE)) {
-            return preEffectiveNode(prev, times, num);
+            return getPreEffectiveSibling(prev, times, num);
         }
         num++;
         if (num >= times) {
             return prev;
         }
-        return preEffectiveNode(prev, times, num);
+        return getPreEffectiveSibling(prev, times, num);
     }
 
-    public static ASTNode preEffectiveNode(ASTNode node, int times) {
-
-
-        return preEffectiveNode(node, times, 0);
-    }
 
     public static Icon getIoIcon() {
         return IoIcons.FILE;
@@ -316,10 +298,10 @@ public class IoUtil {
 
     /**
      * 获取引用文件含自己本身
+     *
      * @return
      */
-    public static  List <String> getImports(PsiElement element)
-    {
+    public static List<String> getImports(PsiElement element) {
         IoFile ioFile = (IoFile) element.getContainingFile();
         IoHead ioHead = ioFile.findChildByClass(IoHead.class);
         List<String> imports = new ArrayList<>(16);
@@ -336,9 +318,8 @@ public class IoUtil {
                         VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
                         //统一用虚拟文件系统避免文件分隔符不相同的情况
                         imports.add(file.getPath());
-                    }
-                    else {
-                        logger.debug("{} 不存在 {}",importFile);
+                    } else {
+                        logger.debug("{} 不存在 ", importFile);
                     }
 
                 }
@@ -347,12 +328,26 @@ public class IoUtil {
         }
         return imports;
     }
+
     public static String getFilePath(PsiElement element) {
         //getContainingFile().getVirtualFile().getPath() 可能会出现空指针
         return element.getContainingFile().getOriginalFile().getVirtualFile().getPath();
     }
 
-    public static Module getModule( PsiElement element) {
+    /**
+     * 计算 filePath 对于standard 的相对路径
+     *
+     * @param standard
+     * @param filePath
+     * @return
+     */
+    public static String getRelativePath(String standard, String filePath) {
+
+        Path a = Paths.get(standard).getParent();
+        return a.relativize(Paths.get(filePath)).toString();
+    }
+
+    public static Module getModule(PsiElement element) {
 
 
         return ModuleUtil.findModuleForPsiElement(element);
@@ -397,22 +392,24 @@ public class IoUtil {
 
         return findEntities(project, null, null);
     }
+
     public static List<IoEntity> findEntities(Project project, Module module) {
 
         return findEntities(project, module, null);
     }
+
     public static List<IoEntity> findEntities(Project project, Module module, String namespace) {
 
-       List<IoEntity> results = new ArrayList<>();
+        List<IoEntity> results = new ArrayList<>();
 //        Collection<VirtualFile> virtualFiles =
 //                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
         Collection<VirtualFile> virtualFiles = null;
         if (module == null) {
-            virtualFiles= FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.projectScope(project));
+            virtualFiles = FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.projectScope(project));
         } else {
 
-          //  FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScopeUtil.)
-            virtualFiles= FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.moduleScope(module));
+            //  FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScopeUtil.)
+            virtualFiles = FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.moduleScope(module));
         }
         for (VirtualFile virtualFile : virtualFiles) {
             if (namespace == null || Objects.equals(IoUtil.getFileNamespace(virtualFile.getPath()), namespace)) {

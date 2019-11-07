@@ -51,7 +51,7 @@ public class EventCompletionProvider extends CompletionProvider {
         PsiElement parent = parameters.getPosition().getParent();
         if (parent instanceof PsiErrorElement) {
             IElementType preType;
-            preNode = IoUtil.preEffectiveNode(parent.getNode());
+            preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
 
@@ -66,7 +66,7 @@ public class EventCompletionProvider extends CompletionProvider {
             }
         } else {
             IElementType preType;
-            preNode = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
+            preNode = IoUtil.getPreEffectiveSibling(parameters.getPosition().getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
                 if (preType.equals(IoTypes.T_ENUM_HEAD)) {
@@ -130,7 +130,7 @@ public class EventCompletionProvider extends CompletionProvider {
 
     public void eventId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement parent = parameters.getPosition().getParent();
-        ASTNode preNode = IoUtil.preEffectiveNode(parent.getNode());
+        ASTNode preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
 
         Integer eventId = IoUtil.getAutoEventId(IoUtil.getFileNamespace(parameters.
                 getOriginalFile()

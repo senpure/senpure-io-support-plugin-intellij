@@ -56,7 +56,7 @@ public class IoAnnotator implements Annotator {
             checkEventName((IoEventName) element, holder);
         } else if (element instanceof IoMessageName) {
             IoMessageName messageName = (IoMessageName) element;
-            checkMessageName(IoUtil.preEffectiveNode(element.getNode()).getText(), messageName, holder);
+            checkMessageName(IoUtil.getPreEffectiveSibling(element.getNode()).getText(), messageName, holder);
         }
     }
 
@@ -339,11 +339,19 @@ public class IoAnnotator implements Annotator {
                         }
                     }
                     if (finds.size() == 0) {
+                        List<String> temps = new ArrayList<>();
+                        for (String ha : has) {
+                            temps.add(IoUtil.getRelativePath(filePath, ha));
+                        }
                         holder.createErrorAnnotation(field.getFieldType(),
-                                "没有导入.io文件" + has.toString());
+                                "没有导入.io文件" + temps.toString());
                     } else if (finds.size() > 1) {
+                        List<String> temps = new ArrayList<>();
+                        for (String ha : finds) {
+                            temps.add(IoUtil.getRelativePath(filePath, ha));
+                        }
                         holder.createErrorAnnotation(field.getFieldType(),
-                                "无法准确知道引用那个.io 文件中的定义" + finds.toString());
+                                "无法准确知道引用那个.io 文件中的定义" + temps.toString());
                     }
 
 

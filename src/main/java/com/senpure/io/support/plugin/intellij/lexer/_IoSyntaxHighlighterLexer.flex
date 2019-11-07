@@ -70,6 +70,7 @@ CODE_COMMENT=#[^\r\n]*
 {
  {WHITE_SPACE}           { return WHITE_SPACE; }
  {IMPORT_VALUE}".io"      { return T_IMPORT_VALUE;}
+ {IMPORT_VALUE}           { return T_IMPORT_VALUE;}
   ";"                     { yybegin(YYINITIAL);return T_SEMICOLON;}
 }
 <NAMEPACE_TAG>

@@ -11,6 +11,8 @@ import com.senpure.io.support.plugin.intellij.completion.*;
 import com.senpure.io.support.plugin.intellij.psi.IoField;
 import com.senpure.io.support.plugin.intellij.psi.IoFieldType;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * IoCompletionContributor
@@ -19,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
  * @time 2019-05-24 17:46:12
  */
 public class IoCompletionContributor extends CompletionContributor {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     //token 有效
     public IoCompletionContributor() {
         EveryHeadCompletionProvider.reg(this);
@@ -27,12 +31,13 @@ public class IoCompletionContributor extends CompletionContributor {
         BeanCompletionProvider.reg(this);
         EnumCompletionProvider.reg(this);
         EventCompletionProvider.reg(this);
+        ImportCompletionProvider.reg(this);
     }
 
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        System.out.println("position " + parameters.getPosition() + "  parent " + parameters.getPosition().getParent());
+        logger.debug("position {} parent {}", parameters.getPosition(), parameters.getPosition().getParent());
         super.fillCompletionVariants(parameters, result);
     }
 

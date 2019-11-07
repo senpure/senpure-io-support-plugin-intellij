@@ -52,11 +52,11 @@ public class MessageCompletionProvider extends CompletionProvider {
         PsiElement parent = parameters.getPosition().getParent();
         if (parent instanceof PsiErrorElement) {
             IElementType preType;
-            preNode = IoUtil.preEffectiveNode(parent.getNode());
+            preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
                 //不判断后面是否有该元素了
-//                ASTNode nextNode = IoUtil.nexEffectiveNode(parent.getNode());
+//                ASTNode nextNode = IoUtil.getNexEffectiveSibling(parent.getNode());
 //                if (nextNode != null && GeneratedParserUtilBase.DUMMY_BLOCK.equals(nextNode.getElementType())) {
 //                    nextNode = IoUtil.childEffectiveNode(nextNode);
 //
@@ -78,7 +78,7 @@ public class MessageCompletionProvider extends CompletionProvider {
             }
         } else {
             IElementType preType;
-            preNode = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
+            preNode = IoUtil.getPreEffectiveSibling(parameters.getPosition().getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
                 // logger.debug("{} {}",preType);
@@ -147,7 +147,7 @@ public class MessageCompletionProvider extends CompletionProvider {
             }
         }
         PsiElement parent = parameters.getPosition();
-        ASTNode typeNode = IoUtil.preEffectiveNode(parent.getNode());
+        ASTNode typeNode = IoUtil.getPreEffectiveSibling(parent.getNode());
         String type = "CS";
         if (typeNode != null) {
             type = typeNode.getText();
@@ -191,8 +191,8 @@ public class MessageCompletionProvider extends CompletionProvider {
 
     public void messageId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement parent = parameters.getPosition().getParent();
-        ASTNode preNode = IoUtil.preEffectiveNode(parent.getNode());
-        ASTNode typeNode = IoUtil.preEffectiveNode(preNode);
+        ASTNode preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
+        ASTNode typeNode = IoUtil.getPreEffectiveSibling(preNode);
         String type = "CS";
         if (typeNode != null) {
             type = typeNode.getText();

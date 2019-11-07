@@ -36,7 +36,7 @@ public class BeanCompletionProvider extends CompletionProvider {
         //logger.debug("parent{}",parent);
         if (parent instanceof PsiErrorElement) {
             IElementType preType;
-            preNode = IoUtil.preEffectiveNode(parent.getNode());
+            preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
             if (preNode != null) {
                 preType = preNode.getElementType();
                 if (preType.equals(IoTypes.T_BEAN_NAME)) {

@@ -42,7 +42,7 @@ public class IoReaderComponent implements ProjectComponent {
                     logger.debug("文件改变 {}", fileOrDirectory.getUrl());
                     IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
                     ioVirtualFileReader.read(fileOrDirectory, IoReader.getInstance().getIoProtocolReaderMap());
-                    if (!ioVirtualFileReader.isHasError()) {
+                    if (!ioVirtualFileReader.isSyntaxError()) {
                         logger.debug("替换 {}", fileOrDirectory.getPath());
                         IoReader.getInstance().replace(fileOrDirectory.getPath(), ioVirtualFileReader);
                     } else {

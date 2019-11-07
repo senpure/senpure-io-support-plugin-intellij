@@ -2,8 +2,10 @@ package com.senpure.io.support.plugin.intellij.completion;
 
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.lookup.AutoCompletionPolicy;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
@@ -16,6 +18,8 @@ import com.senpure.io.support.plugin.intellij.IoIcons;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,8 @@ import java.util.List;
  */
 public class FieldCompletionProvider extends CompletionProvider {
 
+    private static Logger logger = LoggerFactory.getLogger(FieldCompletionProvider.class);
+
     public static void reg(CompletionContributor contributor) {
 
         contributor.extend(CompletionType.BASIC, PlatformPatterns.psiElement(IoTypes.T_FIELD_TYPE_QUOTE), new FieldCompletionProvider());
@@ -35,9 +41,9 @@ public class FieldCompletionProvider extends CompletionProvider {
 
     }
 
-    String[] base = new String[]{"int", "long", "sint", "slong", "fixed32", "fixed64", "float", "double", "boolean", "String"};
+    private static String[] base = new String[]{"int", "long", "sint", "slong", "fixed32", "fixed64", "float", "double", "boolean", "String"};
 
-    private boolean isBase(String text) {
+    private static boolean isBase(String text) {
         for (String s : base) {
             if (s.equals(text)) {
                 return true;
@@ -60,8 +66,7 @@ public class FieldCompletionProvider extends CompletionProvider {
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
 
-
-        IElementType elementType = IoUtil.preEffectiveElementType(parameters.getPosition().getNode());
+        IElementType elementType = IoUtil.getPreEffectiveSiblingElementType(parameters.getPosition().getNode());
         if (elementType != null) {
             if (elementType.equals(IoTypes.T_LEFT_BRACE)
                     || elementType.equals(IoTypes.T_SEMICOLON)
@@ -70,19 +75,9 @@ public class FieldCompletionProvider extends CompletionProvider {
                     result.addElement(LookupElementBuilder.create(s));
                 }
                 List<Bean> beans = getBeans();
-//                System.out.println("start");
-//                for (Bean bean : beans) {
-//                    if (bean.getName().startsWith("Same")) {
-//                        System.out.println(bean.getName()+" "+bean.getNamespace());
-//                    }
-//                }
-//
-//                System.out.println("end");
                 for (Bean bean : beans) {
-
-                    result.addElement(LookupElementBuilder.create(bean,bean.getName())
+                    result.addElement(LookupElementBuilder.create(bean, bean.getName())
                             .withTailText(" (" + bean.getNamespace() + ")", true)
-
                             .withIcon(IoIcons.FILE)
                     );
                 }
@@ -94,18 +89,174 @@ public class FieldCompletionProvider extends CompletionProvider {
 
     static class FieldNameCompletionProvider extends CompletionProvider {
 
-
-        @Override
         protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
             String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
-            ASTNode pre = IoUtil.preEffectiveNode(parameters.getPosition().getNode());
+            int start = parameters.getPosition().getTextOffset() + text.length();
+            int end = parameters.getEditor().getDocument().getTextLength();
+            String nextText = "";
+            if (start < end) {
+                nextText = parameters.getEditor().getDocument().getText(new TextRange(start, start + 1));
+            }
+            ASTNode pre;
+            boolean base;
+            boolean list = false;
+            pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getNode());
+            if (pre != null) {
+                logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getText(), text);
+
+                if (pre.getElementType().equals(IoTypes.T_RIGHT_BRACKET)) {
+                    list = true;
+                    pre = IoUtil.getPreEffectiveSibling(pre, 2);
+                    logger.debug(" list  is true pre {}", pre);
+                }
+
+            } else {
+                logger.debug("pre  is null  text [{}]", text);
+                pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getParent().getNode());
+                logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getText(), text);
+                if (pre.getElementType().equals(IoTypes.FIELD_LIST)) {
+                    list = true;
+                    pre = IoUtil.getPreEffectiveSibling(pre, 1);
+                    logger.debug(" list  is true pre {}", pre);
+                }
+            }
+            List<String> names = new ArrayList<>(16);
+            //list后缀补全
+            List<String> namesList = new ArrayList<>(16);
+            base = isBase(pre.getText());
+            if (text.length() > 0) {
+                if (base) {
+                    names.add(text);
+                    if (!list) {
+                        addListName(pre.getText(), text, names, namesList);
+                    }
+                } else {
+                    getName(pre.getText(), text, list, names, namesList);
+                    if (!list) {
+                        addListName(pre.getText(), text, names, namesList);
+                    }
+                }
+
+            } else {
+                if (base) {
+                    names.add(pre.getText());
+                    if (!list) {
+                        addListName(pre.getText(), pre.getText(), names, namesList);
+                    }
+                } else {
+                    getName(pre.getText(), text, list, names, namesList);
+                    if (!list) {
+                        addListName(pre.getText(), text, names, namesList);
+                    }
+                }
+            }
+            completionList(nextText, names, parameters, result);
+            completionList(nextText, namesList, parameters, result);
+            completionList(names, parameters, result);
+            completionList(namesList, parameters, result);
+        }
+
+        private void addListName(String type, String text, List<String> names, List<String> namesList) {
+            String name = Inflector.getInstance().pluralize(type);
+            name = nameRule(name);
+            names.add("[] " + name);
+            String name2 = nameRule(type);
+            namesList.add("[] " + name2 + "List");
+            if (text.length() > 0) {
+                String t = text.toLowerCase();
+                String t2 = name2.toLowerCase();
+                if (!t2.startsWith(t) && t.equals(t2)) {
+                    names.add("[] " + text + name);
+                    namesList.add("[] " + text + name2 + "List");
+                }
+            }
+        }
+
+        private void getName(String quote, String text, boolean list, List<String> names, List<String> namesList) {
+            if (list) {
+                String name = Inflector.getInstance().pluralize(quote);
+                name = nameRule(name);
+                names.add(name);
+                String name2 = nameRule(quote);
+                namesList.add(name2 + "List");
+                if (text.length() > 0) {
+                    String t = text.toLowerCase();
+                    String t2 = name2.toLowerCase();
+                    if (!t2.startsWith(t) && t.equals(t2)) {
+                        names.add(text + name);
+                        namesList.add(text + name2 + "List");
+                    }
+                }
+
+            } else {
+                String name = nameRule(quote);
+                names.add(nameRule(name));
+                if (text.length() > 0) {
+                    String t = text.toLowerCase();
+                    String t2 = quote.toLowerCase();
+                    if (!t2.startsWith(t) && t.equals(t2)) {
+                        names.add(text);
+                        names.add(text + quote);
+                    }
+
+                }
+            }
+
+        }
+
+        private void completionList(String finalNextText, List<String> names, CompletionParameters parameters, CompletionResultSet result) {
+            for (int i = 0; i < names.size(); i++) {
+                String name = names.get(i);
+                result.addElement(LookupElementBuilder.create(name)
+                        .withInsertHandler((context1, item) -> insertSemicolonHandler(finalNextText, parameters, name))
+                );
+            }
+        }
+
+        private void insertSemicolonHandler(String finalNextText, CompletionParameters parameters, String text) {
+            boolean insertSemicolon = false;
+            if (finalNextText.length() == 0 || finalNextText.equals(" ") || finalNextText.equals("\n")) {
+                insertSemicolon = true;
+            }
+            if (insertSemicolon) {
+                int offset = parameters.getPosition().getTextOffset() + text.length();
+                parameters.getEditor().getDocument().insertString(offset, ";");
+                parameters.getEditor().getCaretModel().moveToOffset(offset + 1);
+            }
+        }
+
+        private void completionList(List<String> names, CompletionParameters parameters, CompletionResultSet result) {
+
+            for (String name : names) {
+                String finalName = name + ";//";
+                result.addElement(LookupElementBuilder.create(finalName)
+                        .withBoldness(true)
+                        .withTailText(" (快捷添加注释) ", true)
+                        .withInsertHandler((context1, item) -> insertCommentHandler(parameters, finalName))
+                        .withAutoCompletionPolicy(AutoCompletionPolicy.NEVER_AUTOCOMPLETE)
+                );
+            }
+        }
+
+        private void insertCommentHandler(CompletionParameters parameters, String text) {
+            parameters.getEditor().getCaretModel().moveToOffset(parameters.getPosition().getTextOffset() + text.length());
+            parameters.getEditor().getSelectionModel().selectLineAtCaret();
+            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+            processor.runWithoutProgress();
+            parameters.getEditor().getSelectionModel().removeSelection();
+
+        }
+
+        protected void addCompletions2(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+            String text = parameters.getPosition().getText().replace("IntellijIdeaRulezzz", "");
+            ASTNode pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getNode());
+
             boolean base = true;
             if (pre != null) {
-
                 boolean list = false;
                 if (pre.getElementType().equals(IoTypes.T_RIGHT_BRACKET)) {
                     list = true;
-                    pre = IoUtil.preEffectiveNode(pre, 2);
+                    pre = IoUtil.getPreEffectiveSibling(pre, 2);
                 }
                 if (pre != null) {
                     if (pre.getElementType().equals(IoTypes.T_FIELD_TYPE_QUOTE)) {
@@ -130,10 +281,13 @@ public class FieldCompletionProvider extends CompletionProvider {
                             String name = nameRule(pre.getText());
                             names.add(nameRule(name));
                         }
-                        for (String name : names) {
-                            result.addElement(LookupElementBuilder.create(name));
-                        }
+
                         //   IElementType nextType = IoUtil.nexEffectiveElementType(parameters.getPosition().getNode());
+                        for (String name : names) {
+                            result.addElement(LookupElementBuilder.create(name)
+
+                            );
+                        }
 
                         for (String name : names) {
                             result.addElement(LookupElementBuilder.create(name + ";")
@@ -147,6 +301,7 @@ public class FieldCompletionProvider extends CompletionProvider {
                                         parameters.getEditor().getSelectionModel().removeSelection();
                                     })
                             );
+
                             result.addElement(LookupElementBuilder.create(name + ";//")
                                     .withBoldness(true)
                                     .withTailText(" (补全分号,添加注释) ", true)
@@ -195,7 +350,7 @@ public class FieldCompletionProvider extends CompletionProvider {
         }
 
         public static String nameRule(String name) {
-            if (StringUtil.isUpperLetter(name.charAt(1))) {
+            if (name.length() > 2 && StringUtil.isUpperLetter(name.charAt(1))) {
                 int len = name.length() - 1;
                 int index = 0;
                 for (int i = 1; i < len; i++) {
