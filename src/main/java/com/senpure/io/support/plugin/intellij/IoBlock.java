@@ -271,7 +271,7 @@ public class IoBlock extends AbstractBlock {
             spacingBuilder.after(IoTypes.FIELD_NAME).spacing(0, 0, 0, false, 0);
         }
         // type [] name
-        int num = 36;
+        int num = 30;
         if (maxModel.index) {
             int maxLen = maxModel.fieldTypeLen + 1 + (maxModel.list ? 3 : 0) + maxModel.fieldNameLen;
             int maxHead = maxLen;

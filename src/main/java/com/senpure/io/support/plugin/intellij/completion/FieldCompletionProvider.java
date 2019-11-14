@@ -2,7 +2,6 @@ package com.senpure.io.support.plugin.intellij.completion;
 
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.AutoCompletionPolicy;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
@@ -17,6 +16,7 @@ import com.senpure.io.generator.reader.IoReader;
 import com.senpure.io.support.plugin.intellij.IoIcons;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +94,11 @@ public class FieldCompletionProvider extends CompletionProvider {
             int start = parameters.getPosition().getTextOffset() + text.length();
             int end = parameters.getEditor().getDocument().getTextLength();
             String nextText = "";
-            if (start < end) {
-                nextText = parameters.getEditor().getDocument().getText(new TextRange(start, start + 1));
+            while (start < end) {
+                nextText = parameters.getEditor().getDocument().getText(new TextRange(start, ++start));
+                if (!nextText.equals(" ")) {
+                    break;
+                }
             }
             ASTNode pre;
             boolean base;
@@ -110,10 +113,14 @@ public class FieldCompletionProvider extends CompletionProvider {
                     logger.debug(" list  is true pre {}", pre);
                 }
 
+
             } else {
                 logger.debug("pre  is null  text [{}]", text);
                 pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getParent().getNode());
                 logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getText(), text);
+                if (pre.getElementType().equals(IoTypes.T_FIELD_NAME)) {
+                    return;
+                }
                 if (pre.getElementType().equals(IoTypes.FIELD_LIST)) {
                     list = true;
                     pre = IoUtil.getPreEffectiveSibling(pre, 1);
@@ -150,10 +157,19 @@ public class FieldCompletionProvider extends CompletionProvider {
                     }
                 }
             }
+            int maxLen = 0;
+            for (String name : names) {
+                int len = name.length();
+                maxLen = len > maxLen ? len : maxLen;
+            }  for (String name : namesList) {
+                int len = name.length();
+                maxLen = len > maxLen ? len : maxLen;
+            }
+            maxLen += 9;
             completionList(nextText, names, parameters, result);
             completionList(nextText, namesList, parameters, result);
-            completionList(names, parameters, result);
-            completionList(namesList, parameters, result);
+            completionList(names,maxLen, parameters, result);
+            completionList(namesList,maxLen, parameters, result);
         }
 
         private void addListName(String type, String text, List<String> names, List<String> namesList) {
@@ -165,7 +181,7 @@ public class FieldCompletionProvider extends CompletionProvider {
             if (text.length() > 0) {
                 String t = text.toLowerCase();
                 String t2 = name2.toLowerCase();
-                if (!t2.startsWith(t) && t.equals(t2)) {
+                if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
                     names.add("[] " + text + name);
                     namesList.add("[] " + text + name2 + "List");
                 }
@@ -182,7 +198,7 @@ public class FieldCompletionProvider extends CompletionProvider {
                 if (text.length() > 0) {
                     String t = text.toLowerCase();
                     String t2 = name2.toLowerCase();
-                    if (!t2.startsWith(t) && t.equals(t2)) {
+                    if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
                         names.add(text + name);
                         namesList.add(text + name2 + "List");
                     }
@@ -194,7 +210,7 @@ public class FieldCompletionProvider extends CompletionProvider {
                 if (text.length() > 0) {
                     String t = text.toLowerCase();
                     String t2 = quote.toLowerCase();
-                    if (!t2.startsWith(t) && t.equals(t2)) {
+                    if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
                         names.add(text);
                         names.add(text + quote);
                     }
@@ -223,17 +239,21 @@ public class FieldCompletionProvider extends CompletionProvider {
                 parameters.getEditor().getDocument().insertString(offset, ";");
                 parameters.getEditor().getCaretModel().moveToOffset(offset + 1);
             }
+            parameters.getEditor().getSelectionModel().selectLineAtCaret();
+            ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+            processor.runWithoutProgress();
+            parameters.getEditor().getSelectionModel().removeSelection();
+
         }
 
-        private void completionList(List<String> names, CompletionParameters parameters, CompletionResultSet result) {
+        private void completionList(List<String> names,int maxLen, CompletionParameters parameters, CompletionResultSet result) {
 
             for (String name : names) {
                 String finalName = name + ";//";
                 result.addElement(LookupElementBuilder.create(finalName)
                         .withBoldness(true)
-                        .withTailText(" (快捷添加注释) ", true)
+                        .withTailText(StringUtils.leftPad(" (快捷添加注释)", maxLen - name.length()), true)
                         .withInsertHandler((context1, item) -> insertCommentHandler(parameters, finalName))
-                        .withAutoCompletionPolicy(AutoCompletionPolicy.NEVER_AUTOCOMPLETE)
                 );
             }
         }
@@ -369,5 +389,10 @@ public class FieldCompletionProvider extends CompletionProvider {
             }
             return StringUtil.toLowerLetter(name, 0);
         }
+    }
+
+    public static void main(String[] args) {
+        String str = "abc";
+        System.out.println(StringUtils.leftPad(str, 9));
     }
 }

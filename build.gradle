@@ -5,7 +5,7 @@ plugins {
 
 
 group 'com.senpure'
-version '2019.09.25.beta'
+version '2019.11.08.beta'
 
 sourceCompatibility = 1.8
 
