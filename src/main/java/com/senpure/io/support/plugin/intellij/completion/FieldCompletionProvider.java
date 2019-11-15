@@ -4,6 +4,7 @@ import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.tree.IElementType;
@@ -52,9 +53,9 @@ public class FieldCompletionProvider extends CompletionProvider {
         return false;
     }
 
-    private List<Bean> getBeans() {
+    private List<Bean> getBeans(Project project) {
         List<Bean> beans = new ArrayList<>();
-        for (IoProtocolReader value : IoReader.getInstance().getIoProtocolReaderMap().values()) {
+        for (IoProtocolReader value : IoReader.getInstance(project.getBasePath()).getIoProtocolReaderMap().values()) {
 
             beans.addAll(value.getBeans());
             beans.addAll(value.getEnums());
@@ -74,7 +75,8 @@ public class FieldCompletionProvider extends CompletionProvider {
                 for (String s : base) {
                     result.addElement(LookupElementBuilder.create(s));
                 }
-                List<Bean> beans = getBeans();
+                List<Bean> beans = getBeans(parameters.getPosition().getProject());
+
                 for (Bean bean : beans) {
                     result.addElement(LookupElementBuilder.create(bean, bean.getName())
                             .withTailText(" (" + bean.getNamespace() + ")", true)

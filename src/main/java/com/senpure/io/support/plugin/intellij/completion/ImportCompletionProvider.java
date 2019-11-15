@@ -27,7 +27,8 @@ public class ImportCompletionProvider extends CompletionProvider {
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         String path = IoUtil.getFilePath(parameters.getPosition());
-        for (IoProtocolReader value : IoReader.getInstance().getIoProtocolReaderMap().values()) {
+        for (IoProtocolReader value : IoReader.getInstance(parameters.getPosition().getProject().getBasePath()).
+                getIoProtocolReaderMap().values()) {
 //            if (value.getBeans().size() + value.getEnums().size() == 0) {
 //                continue;
 //            }

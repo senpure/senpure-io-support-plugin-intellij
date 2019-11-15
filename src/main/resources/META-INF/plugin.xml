@@ -69,16 +69,24 @@
          -->
         <lang.commenter language="Io" implementationClass="com.senpure.io.support.plugin.intellij.IoCommenter"/>
            <!--  -->
+
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
     </actions>
 
+      <application-components>
+          <component>
+              <implementation-class>com.senpure.io.support.plugin.intellij.component.IoApplicationComment</implementation-class>
+          </component>
+      </application-components>
+       <!--
     <project-components>
         <component>
-            <implementation-class>com.senpure.io.support.plugin.intellij.component.IoReaderComponent
-            </implementation-class>
+            <implementation-class>com.senpure.io.support.plugin.intellij.component.IoReaderComponent</implementation-class>
         </component>
     </project-components>
+ -->
+
 </idea-plugin>

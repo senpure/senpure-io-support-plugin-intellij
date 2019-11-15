@@ -48,7 +48,7 @@ public class MessageCompletionProvider extends CompletionProvider {
         boolean messageName = false;
         boolean messageId = false;
         boolean brace = false;
-        ASTNode preNode = null;
+        ASTNode preNode;
         PsiElement parent = parameters.getPosition().getParent();
         if (parent instanceof PsiErrorElement) {
             IElementType preType;
@@ -115,7 +115,8 @@ public class MessageCompletionProvider extends CompletionProvider {
             extra = true;
             text=StringUtil.toUpperFirstLetter(text);
         }
-        IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
+        IoProtocolReader reader = IoReader.getInstance(parameters.getPosition().getProject().getBasePath()).
+                getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());

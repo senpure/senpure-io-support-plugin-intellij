@@ -99,7 +99,8 @@ public class EventCompletionProvider extends CompletionProvider {
             extra = true;
         }
 
-        IoProtocolReader reader = IoReader.getInstance().getIoProtocolReaderMap().get(parameters.
+        IoProtocolReader reader = IoReader.getInstance(parameters.getPosition().getProject().getBasePath())
+                .getIoProtocolReaderMap().get(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath());
