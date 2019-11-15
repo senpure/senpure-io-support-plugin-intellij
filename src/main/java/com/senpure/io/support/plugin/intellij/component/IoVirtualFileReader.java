@@ -81,7 +81,11 @@ public class IoVirtualFileReader extends IoProtocolReader {
 
     @Override
     protected void read(CharStream input) {
-        super.read(input);
+        try {
+            super.read(input);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         IoUtil.setFileNamespace(filePath, getNamespace());
         for (Message message : getMessages()) {
