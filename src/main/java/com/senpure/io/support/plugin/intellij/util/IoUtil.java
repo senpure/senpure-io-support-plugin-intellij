@@ -1,9 +1,11 @@
 package com.senpure.io.support.plugin.intellij.util;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -13,9 +15,12 @@ import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.senpure.io.generator.model.Bean;
+import com.senpure.io.generator.model.Event;
+import com.senpure.io.generator.model.Field;
+import com.senpure.io.generator.model.Message;
 import com.senpure.io.support.plugin.intellij.IoFileType;
 import com.senpure.io.support.plugin.intellij.IoIcons;
-import com.senpure.io.support.plugin.intellij.model.IoEntityWrapper;
 import com.senpure.io.support.plugin.intellij.psi.*;
 import com.senpure.template.FileUtil;
 import org.slf4j.Logger;
@@ -42,7 +47,11 @@ public class IoUtil {
      */
     private static Map<String, String> fileNamespaceMap = new HashMap<>();
     /**
-     * key命名空间+messageType+name
+     * key filePath + bean.type + bean.name + [bean.id]
+     */
+    private static Map<String, Bean> beanMap = new HashMap<>();
+    /**
+     * key projectPath+命名空间+messageType+name
      */
     private static Map<String, Integer> messageIdMap = new HashMap<>();
     private static Map<String, Integer> namespaceMaxMessageIdMap = new HashMap<>();
@@ -53,20 +62,17 @@ public class IoUtil {
     private static int maxEventId = 0;
 
 
-
-
-
-    private static String getKey(String namespace, String messageType, String name) {
-        return namespace + messageType + name;
+    private static String getKey(String projectPath, String namespace, String messageType, String name) {
+        return projectPath + namespace + messageType + name;
     }
 
-    private static String getKey(String namespace, String name) {
-        return namespace + name;
+    private static String getKey(String projectPath, String namespace, String name) {
+        return projectPath + namespace + name;
     }
 
-    public static void setMessageId(String namespace, String messageType, String name, Integer messageId) {
+    public static void setMessageId(String projectPath, String namespace, String messageType, String name, Integer messageId) {
 
-        messageIdMap.put(getKey(namespace, messageType, name), messageId);
+        messageIdMap.put(getKey(projectPath, namespace, messageType, name), messageId);
         Integer namespaceMaxId = namespaceMaxMessageIdMap.get(namespace);
         if (namespaceMaxId == null || messageId > namespaceMaxId) {
             namespaceMaxMessageIdMap.put(namespace, messageId);
@@ -76,9 +82,9 @@ public class IoUtil {
         }
     }
 
-    public static void setEventId(String namespace, String name, Integer eventId) {
+    public static void setEventId(String projectPath, String namespace, String name, Integer eventId) {
 
-        eventIdMap.put(getKey(namespace, name), eventId);
+        eventIdMap.put(getKey(projectPath, namespace, name), eventId);
         Integer namespaceMaxId = namespaceMaxEventIdMap.get(namespace);
         if (namespaceMaxId == null || eventId > namespaceMaxId) {
             namespaceMaxEventIdMap.put(namespace, eventId);
@@ -113,8 +119,8 @@ public class IoUtil {
         return initId(maxEventId);
     }
 
-    public static Integer getAutoEventId(String namespace, String name) {
-        Integer namespaceMaxId = namespaceMaxEventIdMap.get(namespace);
+    public static Integer getAutoEventId(String projectPath, String namespace, String name) {
+        Integer namespaceMaxId = namespaceMaxEventIdMap.get(projectPath + namespace);
         if (namespaceMaxId == null) {
             return initEventId();
         }
@@ -122,10 +128,10 @@ public class IoUtil {
     }
 
 
-    public static Integer getAutoMessageId(String namespace, String messageType, String name) {
+    public static Integer getAutoMessageId(String projectPath, String namespace, String messageType, String name) {
         Integer otherId;
         if (messageType.equalsIgnoreCase("CS")) {
-            otherId = messageIdMap.get(getKey(namespace, "SC", name));
+            otherId = messageIdMap.get(getKey(projectPath, namespace, "SC", name));
             if (otherId != null) {
                 return otherId - 1;
             } else {
@@ -159,6 +165,50 @@ public class IoUtil {
         }
     }
 
+    public static void setBeanIdentity(String filePath, Bean bean) {
+
+        beanMap.put(filePath + bean.getName(), bean);
+
+    }
+
+    public static void setBeanIdentity(String filePath, Event bean) {
+        beanMap.put(filePath + bean.getName() + bean.getId(), bean);
+    }
+
+    public static void setBeanIdentity(String filePath, Message bean) {
+        beanMap.put(filePath + bean.getType() + bean.getName() + bean.getId(), bean);
+        beanMap.put(filePath + (bean.getType().toLowerCase()) + bean.getName() + bean.getId(), bean);
+    }
+
+    public static int getBeanNextIndex(String filePath, String identity) {
+
+        int index = 0;
+        Bean bean = beanMap.get(filePath + identity);
+        if (bean != null) {
+            for (Field field : bean.getFields()) {
+                if (field.getIndex() > index) {
+                    index = field.getIndex();
+                }
+            }
+        }
+        return index + 1;
+    }
+
+
+    public static String getNextText(int start, Document document) {
+
+        int end = document.getTextLength();
+        String nextText = "";
+        while (start < end) {
+            nextText = document.getText(new TextRange(start, ++start));
+            if (!nextText.equals(" ")) {
+                break;
+            }
+        }
+        return nextText;
+    }
+
+
     public static void setFileNamespace(String filePath, String namespace) {
         fileNamespaceMap.put(filePath, namespace);
     }
@@ -169,7 +219,7 @@ public class IoUtil {
 
     public static IElementType getPreEffectiveSiblingElementType(ASTNode node) {
         ASTNode pre = getPreEffectiveSibling(node);
-        return pre==null?null:  pre.getElementType() ;
+        return pre == null ? null : pre.getElementType();
     }
 
 
@@ -277,24 +327,38 @@ public class IoUtil {
     }
 
 
-    public static IoEntityWrapper findEntityWrapper(Project project) {
-
-        IoEntityWrapper wrapper = new IoEntityWrapper();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(IoFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        for (VirtualFile virtualFile : virtualFiles) {
-            IoFile ioFile = (IoFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (ioFile != null) {
-                Collection co = PsiTreeUtil.findChildrenOfType(ioFile, IoEntity.class);
-                // logger.debug("co {}", co);
-                //可以找到
-                Collection co2 = PsiTreeUtil.findChildrenOfType(ioFile, IoBean.class);
-                //logger.debug("co2 {}", co2);
-            }
+    public static String findBeanIdentity(ASTNode node) {
+        if (node == null) {
+            return null;
         }
-        return wrapper;
-    }
+        String identity = "";
+        boolean start = false;
+        ASTNode pre = node;
+        do {
+            pre = getPreEffectiveSibling(pre);
+            if (pre != null) {
+                String text = pre.getText();
+                if (text.equals("}")) {
+                    break;
+                } else if (text.equals("bean")
+                        || text.equals("enum")
+                        || text.equals("message")
+                        || text.equals("event")
+                ) {
 
+                    return identity;
+                }
+                if (start) {
+                    identity = pre.getText() + identity;
+                }
+                if (text.equals("{")) {
+                    start = true;
+                }
+            }
+        } while (pre != null);
+
+        return null;
+    }
 
     /**
      * 获取引用文件含自己本身

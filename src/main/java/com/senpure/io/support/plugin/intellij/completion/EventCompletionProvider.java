@@ -130,25 +130,48 @@ public class EventCompletionProvider extends CompletionProvider {
     }
 
     public void eventId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+        PsiElement position = parameters.getPosition();
+        String text = position.getText().replace("IntellijIdeaRulezzz", "");
+        int start = position.getTextOffset() + text.length();
+        String nextText = IoUtil.getNextText(start, parameters.getEditor().getDocument());
         PsiElement parent = parameters.getPosition().getParent();
         ASTNode preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
 
-        Integer eventId = IoUtil.getAutoEventId(IoUtil.getFileNamespace(parameters.
+        Integer eventId = IoUtil.getAutoEventId(
+                parameters.getPosition().getProject().getBasePath(),
+                IoUtil.getFileNamespace(parameters.
                 getOriginalFile()
                 .getVirtualFile()
                 .getPath()), preNode.getText());
-        result.addElement(LookupElementBuilder.create(eventId));
-        result.addElement(LookupElementBuilder.create(eventId + " {\n}")
-                .withBoldness(true)
-                .withTailText(" (补全括号) ", true)
+        result.addElement(LookupElementBuilder.create(eventId)
                 .withInsertHandler((context, item) -> {
-                    parameters.getEditor().getCaretModel().moveToOffset((eventId + "").length() + parameters.getOffset() + 2);
-                    parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                    ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                    processor.runWithoutProgress();
-                    parameters.getEditor().getSelectionModel().removeSelection();
+
+                    boolean insert = false;
+                    if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
+                        insert = true;
+                    }
+                    if (insert) {
+                        int offset = parameters.getPosition().getTextOffset() + (eventId+"").length();
+                        parameters.getEditor().getDocument().insertString(offset, "{\n}");
+                        parameters.getEditor().getCaretModel().moveToOffset(offset + 1);
+                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                        processor.runWithoutProgress();
+                        parameters.getEditor().getSelectionModel().removeSelection();
+                    }
                 })
         );
+//        result.addElement(LookupElementBuilder.create(eventId + " {\n}")
+//                .withBoldness(true)
+//                .withTailText(" (补全括号) ", true)
+//                .withInsertHandler((context, item) -> {
+//                    parameters.getEditor().getCaretModel().moveToOffset((eventId + "").length() + parameters.getOffset() + 2);
+//                    parameters.getEditor().getSelectionModel().selectLineAtCaret();
+//                    ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+//                    processor.runWithoutProgress();
+//                    parameters.getEditor().getSelectionModel().removeSelection();
+//                })
+//        );
 
     }
 

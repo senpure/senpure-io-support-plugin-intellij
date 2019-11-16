@@ -108,101 +108,125 @@ public class FieldCompletionProvider extends CompletionProvider {
             pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getNode());
             if (pre != null) {
                 logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getText(), text);
-
                 if (pre.getElementType().equals(IoTypes.T_RIGHT_BRACKET)) {
                     list = true;
                     pre = IoUtil.getPreEffectiveSibling(pre, 2);
                     logger.debug(" list  is true pre {}", pre);
                 }
 
-
             } else {
                 logger.debug("pre  is null  text [{}]", text);
                 pre = IoUtil.getPreEffectiveSibling(parameters.getPosition().getParent().getNode());
-                logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getText(), text);
+                logger.debug("pre {}  preText [{}] text [{}]", pre, pre.getElementType(), text);
                 if (pre.getElementType().equals(IoTypes.T_FIELD_NAME)) {
                     return;
+                } else if (pre.getElementType().equals(IoTypes.T_EQUAL)) {
+                    String identity = IoUtil.findBeanIdentity(pre);
+                    logger.debug("identity {}", identity);
+                    if (identity != null) {
+                        logger.debug("nextIndex {}", IoUtil.getBeanNextIndex(IoUtil.getFilePath(parameters.getPosition()), identity));
+                    }
+
+                    return;
+                } else if (pre.getElementType().equals(IoTypes.T_FIELD_INDEX)) {
+
+                    return;
+                } else {
+                    if (pre.getElementType().equals(IoTypes.FIELD_LIST)) {
+                        list = true;
+                        pre = IoUtil.getPreEffectiveSibling(pre, 1);
+                        logger.debug(" list  is true pre {}", pre);
+                    }
                 }
-                if (pre.getElementType().equals(IoTypes.FIELD_LIST)) {
-                    list = true;
-                    pre = IoUtil.getPreEffectiveSibling(pre, 1);
-                    logger.debug(" list  is true pre {}", pre);
-                }
+
             }
             List<String> names = new ArrayList<>(16);
             //list后缀补全
             List<String> namesList = new ArrayList<>(16);
+            int nextIndex = 1;
+            String identity = IoUtil.findBeanIdentity(pre);
+            logger.debug("identity {}", identity);
+            if (identity != null) {
+                nextIndex = IoUtil.getBeanNextIndex(IoUtil.getFilePath(parameters.getPosition()), identity);
+                logger.debug("nextIndex {}", nextIndex);
+            }
             base = isBase(pre.getText());
             if (text.length() > 0) {
                 if (base) {
                     names.add(text);
-                    if (!list) {
-                        addListName(pre.getText(), text, names, namesList);
-                    }
+                    names.add(text + " = " + nextIndex);
                 } else {
-                    getName(pre.getText(), text, list, names, namesList);
-                    if (!list) {
-                        addListName(pre.getText(), text, names, namesList);
-                    }
+                    getName(pre.getText(), text, list, names, namesList, nextIndex);
                 }
-
+                if (!list) {
+                    addListName(pre.getText(), text, names, namesList, nextIndex);
+                }
             } else {
                 if (base) {
                     names.add(pre.getText());
-                    if (!list) {
-                        addListName(pre.getText(), pre.getText(), names, namesList);
-                    }
+                    names.add(pre.getText() + " = " + nextIndex);
                 } else {
-                    getName(pre.getText(), text, list, names, namesList);
-                    if (!list) {
-                        addListName(pre.getText(), text, names, namesList);
-                    }
+                    getName(pre.getText(), text, list, names, namesList, nextIndex);
+                }
+                if (!list) {
+                    addListName(pre.getText(), pre.getText(), names, namesList, nextIndex);
                 }
             }
             int maxLen = 0;
             for (String name : names) {
                 int len = name.length();
                 maxLen = len > maxLen ? len : maxLen;
-            }  for (String name : namesList) {
+            }
+            for (String name : namesList) {
                 int len = name.length();
                 maxLen = len > maxLen ? len : maxLen;
             }
+
             maxLen += 9;
             completionList(nextText, names, parameters, result);
             completionList(nextText, namesList, parameters, result);
-            completionList(names,maxLen, parameters, result);
-            completionList(namesList,maxLen, parameters, result);
+
+            completionList(names, maxLen, parameters, result);
+            completionList(namesList, maxLen, parameters, result);
         }
 
-        private void addListName(String type, String text, List<String> names, List<String> namesList) {
+        private void addListName(String type, String text, List<String> names, List<String> namesList, int nextIndex) {
             String name = Inflector.getInstance().pluralize(type);
             name = nameRule(name);
             names.add("[] " + name);
+            names.add("[] " + name + " = " + nextIndex);
             String name2 = nameRule(type);
             namesList.add("[] " + name2 + "List");
+            namesList.add("[] " + name2 + "List = " + nextIndex);
             if (text.length() > 0) {
                 String t = text.toLowerCase();
                 String t2 = name2.toLowerCase();
-                if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
+                if (!t2.startsWith(t) && !t.equals(t2) && !t.startsWith(t2)) {
                     names.add("[] " + text + name);
+                    names.add("[] " + text + name + " = " + nextIndex);
                     namesList.add("[] " + text + name2 + "List");
+                    namesList.add("[] " + text + name2 + "List = " + nextIndex);
                 }
             }
         }
 
-        private void getName(String quote, String text, boolean list, List<String> names, List<String> namesList) {
+        private void getName(String quote, String text, boolean list, List<String> names, List<String> namesList, int nextIndex) {
             if (list) {
                 String name = Inflector.getInstance().pluralize(quote);
                 name = nameRule(name);
                 names.add(name);
+                names.add(name + " = " + nextIndex);
                 String name2 = nameRule(quote);
                 namesList.add(name2 + "List");
+                namesList.add(name2 + "List = " + nextIndex);
                 if (text.length() > 0) {
                     String t = text.toLowerCase();
                     String t2 = name2.toLowerCase();
-                    if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
+                    if (!t2.startsWith(t) && !t.equals(t2) && !t.startsWith(t2)) {
                         names.add(text + name);
+                        names.add(text + name + " = " + nextIndex);
                         namesList.add(text + name2 + "List");
+                        namesList.add(text + name2 + "List = " + nextIndex);
                     }
                 }
 
@@ -212,7 +236,7 @@ public class FieldCompletionProvider extends CompletionProvider {
                 if (text.length() > 0) {
                     String t = text.toLowerCase();
                     String t2 = quote.toLowerCase();
-                    if (!t2.startsWith(t) && !t.equals(t2)&&!t.startsWith(t2)) {
+                    if (!t2.startsWith(t) && !t.equals(t2) && !t.startsWith(t2)) {
                         names.add(text);
                         names.add(text + quote);
                     }
@@ -248,7 +272,7 @@ public class FieldCompletionProvider extends CompletionProvider {
 
         }
 
-        private void completionList(List<String> names,int maxLen, CompletionParameters parameters, CompletionResultSet result) {
+        private void completionList(List<String> names, int maxLen, CompletionParameters parameters, CompletionResultSet result) {
 
             for (String name : names) {
                 String finalName = name + ";//";

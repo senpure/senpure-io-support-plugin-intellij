@@ -113,7 +113,7 @@ public class MessageCompletionProvider extends CompletionProvider {
         boolean extra = false;
         if (text.length() > 0) {
             extra = true;
-            text=StringUtil.toUpperFirstLetter(text);
+            text = StringUtil.toUpperFirstLetter(text);
         }
         IoProtocolReader reader = IoReader.getInstance(parameters.getPosition().getProject().getBasePath()).
                 getIoProtocolReaderMap().get(parameters.
@@ -191,6 +191,10 @@ public class MessageCompletionProvider extends CompletionProvider {
     }
 
     public void messageId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+        PsiElement position = parameters.getPosition();
+        String text = position.getText().replace("IntellijIdeaRulezzz", "");
+        int start = position.getTextOffset() + text.length();
+        String nextText = IoUtil.getNextText(start, parameters.getEditor().getDocument());
         PsiElement parent = parameters.getPosition().getParent();
         ASTNode preNode = IoUtil.getPreEffectiveSibling(parent.getNode());
         ASTNode typeNode = IoUtil.getPreEffectiveSibling(preNode);
@@ -198,23 +202,43 @@ public class MessageCompletionProvider extends CompletionProvider {
         if (typeNode != null) {
             type = typeNode.getText();
         }
-        Integer messageId = IoUtil.getAutoMessageId(IoUtil.getFileNamespace(parameters.
-                getOriginalFile()
-                .getVirtualFile()
-                .getPath()), type, preNode.getText());
-        result.addElement(LookupElementBuilder.create(messageId));
 
-        result.addElement(LookupElementBuilder.create(messageId + " {\n}")
-                .withBoldness(true)
-                .withTailText(" (补全括号) ", true)
+        Integer messageId = IoUtil.getAutoMessageId(
+                parameters.getPosition().getProject().getBasePath(),
+                IoUtil.getFileNamespace(parameters.
+                        getOriginalFile()
+                        .getVirtualFile()
+                        .getPath()), type, preNode.getText());
+        result.addElement(LookupElementBuilder.create(messageId)
                 .withInsertHandler((context, item) -> {
-                    parameters.getEditor().getCaretModel().moveToOffset((messageId + "").length() + parameters.getOffset() + 2);
-                    parameters.getEditor().getSelectionModel().selectLineAtCaret();
-                    ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
-                    processor.runWithoutProgress();
-                    parameters.getEditor().getSelectionModel().removeSelection();
+
+                    boolean insert = false;
+                    if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
+                        insert = true;
+                    }
+                    if (insert) {
+                        int offset = parameters.getPosition().getTextOffset() + (messageId+"").length();
+                        parameters.getEditor().getDocument().insertString(offset, "{\n}");
+                        parameters.getEditor().getCaretModel().moveToOffset(offset + 1);
+                        parameters.getEditor().getSelectionModel().selectLineAtCaret();
+                        ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+                        processor.runWithoutProgress();
+                        parameters.getEditor().getSelectionModel().removeSelection();
+                    }
                 })
         );
+
+//        result.addElement(LookupElementBuilder.create(messageId + " {\n}")
+//                .withBoldness(true)
+//                .withTailText(" (补全括号) ", true)
+//                .withInsertHandler((context, item) -> {
+//                    parameters.getEditor().getCaretModel().moveToOffset((messageId + "").length() + parameters.getOffset() + 2);
+//                    parameters.getEditor().getSelectionModel().selectLineAtCaret();
+//                    ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
+//                    processor.runWithoutProgress();
+//                    parameters.getEditor().getSelectionModel().removeSelection();
+//                })
+//        );
 
     }
 

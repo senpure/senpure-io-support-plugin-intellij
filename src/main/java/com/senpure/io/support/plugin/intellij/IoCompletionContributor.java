@@ -27,7 +27,10 @@ public class IoCompletionContributor extends CompletionContributor {
     public IoCompletionContributor() {
         EveryHeadCompletionProvider.reg(this);
         MessageCompletionProvider.reg(this);
-        FieldCompletionProvider.reg(this);
+
+        FieldTypeCompletionProvider.reg(this);
+        FieldNameCompletionProvider.reg(this);
+
         BeanCompletionProvider.reg(this);
         EnumCompletionProvider.reg(this);
         EventCompletionProvider.reg(this);
@@ -54,7 +57,7 @@ public class IoCompletionContributor extends CompletionContributor {
         }
     }
 
-    class FieldNameCompletionProvider extends CompletionProvider {
+    class FieldNameCompletionProvider2 extends CompletionProvider {
 
         @Override
         protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
