@@ -76,29 +76,33 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                 nextIndex = IoUtil.getBeanNextIndex(IoUtil.getFilePath(parameters.getPosition()), identity);
                 logger.debug("nextIndex {}", nextIndex);
             }
-            String finalNextText = nextText;
             int finalNextIndex = nextIndex;
+            boolean insertSemicolon = false;
+            if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
+                insertSemicolon = true;
+            }
             for (String name : names) {
-                result.addElement(LookupElementBuilder.create(name)
-                        .withInsertHandler((context1, item) -> insertSemicolonHandler(finalNextText, parameters, name, finalNextIndex))
-                );
+                result.addElement(LookupElementBuilder.create(name));
+                if (insertSemicolon) {
+                    result.addElement(LookupElementBuilder.create(name)
+                            .withTailText("autoCode", true)
+                            .withInsertHandler((context1, item) -> insertSemicolonHandler( parameters, name, finalNextIndex))
+                    );
+                }
+
             }
 
 
         }
     }
 
-    private void insertSemicolonHandler(String nextText, CompletionParameters parameters, String text, int nextIndex) {
-        boolean insertSemicolon = false;
-        if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
-            insertSemicolon = true;
-        }
-        if (insertSemicolon) {
-            int offset = parameters.getPosition().getTextOffset() + text.length();
-            String insertStr = " = " + nextIndex + ";//";
-            parameters.getEditor().getDocument().insertString(offset, insertStr);
-            parameters.getEditor().getCaretModel().moveToOffset(offset + insertStr.length());
-        }
+    private void insertSemicolonHandler(CompletionParameters parameters, String text, int nextIndex) {
+
+        int offset = parameters.getPosition().getTextOffset() + text.length();
+        String insertStr = " = " + nextIndex + ";//";
+        parameters.getEditor().getDocument().insertString(offset, insertStr);
+        parameters.getEditor().getCaretModel().moveToOffset(offset + insertStr.length());
+
         parameters.getEditor().getSelectionModel().selectLineAtCaret();
         ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
         processor.runWithoutProgress();
