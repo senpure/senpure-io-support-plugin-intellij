@@ -29,28 +29,10 @@ public class IoVirtualFileReader extends IoProtocolReader {
     public void enterImportValue(IoParser.ImportValueContext ctx) {
 
         String path = ctx.getText();
+
         if (path.length() > 0) {
             importIos.add(path);
-            // String parent = LocalFileSystem.getInstance().findFileByPath(filePath).getParent().getPath();
-            String parent = new File(filePath).getParent();
-            File importFile = FileUtil.file(path, parent);
-            if (importFile.exists()) {
-                //统一用虚拟文件系统避免文件分隔符不相同的情况
-                VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
-                if (ioProtocolReaderMap.get(file.getPath()) == null) {
 
-                    IoVirtualFileReader reader = new IoVirtualFileReader();
-                    reader.read(file, ioProtocolReaderMap);
-                    ioProtocolReaderMap.put(file.getPath(), reader);
-                }
-                importKeys.add(file.getPath());
-            } else {
-
-                // logger.debug("path {}  parent {} vf {}",path,parent,LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath()));
-                checkErrorBuilder();
-                errorBuilder.append(filePath).append("引用文件 不存在 ").append(path);
-
-            }
         }
 
     }
@@ -60,38 +42,57 @@ public class IoVirtualFileReader extends IoProtocolReader {
 
     }
 
-    public void read(VirtualFile file, Map<String, IoProtocolReader> ioProtocolReaderMap) {
-        filePath = file.getPath();
-        super.ioProtocolReaderMap = ioProtocolReaderMap;
-        ioErrorListener = new IoErrorListener(filePath);
-        try {
-            read(CharStreams.fromStream(file.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void read(String filePath,String text, Map<String, IoProtocolReader> ioProtocolReaderMap) {
-        this.filePath=filePath;
-        super.ioProtocolReaderMap = ioProtocolReaderMap;
-        ioErrorListener = new IoErrorListener(filePath);
-        try {
-            read(CharStreams.fromString(text));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected boolean canWalk2() {
-        return true;
-    }
-
     @Override
-    protected void read(CharStream input) {
-        try {
-            super.read(input);
-        } catch (Exception e) {
-            e.printStackTrace();
+    protected void readImports() {
+        for (String path : importIos) {
+            String parent = new File(filePath).getParent();
+            File importFile = FileUtil.file(path, parent);
+            if (importFile.exists()) {
+                //统一用虚拟文件系统避免文件分隔符不相同的情况
+                VirtualFile file = LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath());
+                read(file, ioProtocolReaderMap);
+                importKeys.add(file.getPath());
+            } else {
+                // logger.debug("path {}  parent {} vf {}",path,parent,LocalFileSystem.getInstance().findFileByPath(importFile.getAbsolutePath()));
+                checkErrorBuilder();
+                errorBuilder.append(filePath).append("引用文件 不存在 ").append(path);
+            }
         }
     }
+
+    public static IoProtocolReader read(VirtualFile file, Map<String, IoProtocolReader> ioProtocolReaderMap) {
+        IoProtocolReader ioProtocolReader = ioProtocolReaderMap.get(file.getPath());
+        if (ioProtocolReader == null) {
+            IoVirtualFileReader virtualFileReader = new IoVirtualFileReader();
+            try {
+                ioProtocolReaderMap.put(file.getPath(), virtualFileReader);
+                virtualFileReader.read(file.getPath(), CharStreams.fromStream(file.getInputStream()), ioProtocolReaderMap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return virtualFileReader;
+        }
+        return ioProtocolReader;
+    }
+
+    public static IoProtocolReader read(String filePath, String text, Map<String, IoProtocolReader> ioProtocolReaderMap) {
+        IoProtocolReader ioProtocolReader = ioProtocolReaderMap.get(filePath);
+        if (ioProtocolReader == null) {
+            IoVirtualFileReader virtualFileReader = new IoVirtualFileReader();
+            ioProtocolReaderMap.put(filePath, virtualFileReader);
+            CharStream input = CharStreams.fromString(text);
+            virtualFileReader.read(filePath, input, ioProtocolReaderMap);
+            return virtualFileReader;
+        }
+        return ioProtocolReader;
+    }
+
+    private void read(String filePath, CharStream input, Map<String, IoProtocolReader> ioProtocolReaderMap) {
+        this.filePath = filePath;
+        this.ioProtocolReaderMap = ioProtocolReaderMap;
+        ioErrorListener = new IoErrorListener(filePath);
+        read(input);
+    }
+
+
 }

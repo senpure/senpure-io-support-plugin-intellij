@@ -12,6 +12,7 @@ import com.senpure.base.util.StringUtil;
 import com.senpure.io.generator.util.ProtocolUtil;
 import com.senpure.io.support.plugin.intellij.psi.IoTypes;
 import com.senpure.io.support.plugin.intellij.util.IoUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,40 +70,60 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                     getName(quote, text, list, names);
                 }
             }
-            int nextIndex = 1;
+            int nextIndex = 0;
             String identity = IoUtil.findBeanIdentity(pre);
+            String filePath = null;
             logger.debug("identity {}", identity);
             if (identity != null) {
-                nextIndex = IoUtil.getBeanNextIndex(IoUtil.getFilePath(parameters.getPosition()), identity);
+                filePath = IoUtil.getFilePath(parameters.getPosition());
+                nextIndex = IoUtil.getBeanNextIndex(filePath, identity);
                 logger.debug("nextIndex {}", nextIndex);
             }
             int finalNextIndex = nextIndex;
-            boolean insertSemicolon = false;
-            if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
-                insertSemicolon = true;
-            }
+            String finalFilePath = filePath;
             for (String name : names) {
                 result.addElement(LookupElementBuilder.create(name));
-                if (insertSemicolon) {
+
+            }
+            if (nextIndex > 0) {
+                int maxLen = 0;
+                List<String> autoNames = new ArrayList<>();
+                for (String name : names) {
+                    autoNames.add(name + " = " + nextIndex);
+
+                }
+                for (String name : autoNames) {
+                    int len = name.length();
+                    maxLen = len > maxLen ? len : maxLen;
+                }
+                maxLen += 11;
+                for (String name : autoNames) {
                     result.addElement(LookupElementBuilder.create(name)
-                            .withTailText("autoCode", true)
-                            .withInsertHandler((context1, item) -> insertSemicolonHandler( parameters, name, finalNextIndex))
+                            .withTailText(StringUtils.leftPad(" (autoCode)", maxLen - name.length()), true)
+                            .withInsertHandler((context1, item) -> insertSemicolonHandler(parameters, name, nextText,
+                                    finalFilePath, identity, finalNextIndex))
                     );
                 }
-
             }
 
 
         }
     }
 
-    private void insertSemicolonHandler(CompletionParameters parameters, String text, int nextIndex) {
+    private void insertSemicolonHandler(CompletionParameters parameters, String text,
+                                        String nextText, String filePath, String identity, int nextIndex) {
 
-        int offset = parameters.getPosition().getTextOffset() + text.length();
-        String insertStr = " = " + nextIndex + ";//";
-        parameters.getEditor().getDocument().insertString(offset, insertStr);
-        parameters.getEditor().getCaretModel().moveToOffset(offset + insertStr.length());
-
+        boolean insertSemicolon = false;
+        IoUtil.markLastIndex(filePath, identity, nextIndex);
+        if (nextText.length() == 0 || nextText.equals(" ") || nextText.equals("\n")) {
+            insertSemicolon = true;
+        }
+        if (insertSemicolon) {
+            int offset = parameters.getPosition().getTextOffset() + text.length();
+            String insertStr = ";//";
+            parameters.getEditor().getDocument().insertString(offset, insertStr);
+            parameters.getEditor().getCaretModel().moveToOffset(offset + insertStr.length());
+        }
         parameters.getEditor().getSelectionModel().selectLineAtCaret();
         ReformatCodeProcessor processor = new ReformatCodeProcessor(parameters.getOriginalFile(), parameters.getEditor().getSelectionModel());
         processor.runWithoutProgress();
@@ -124,8 +145,8 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                 String x = text.toLowerCase();
                 String y = nameQuote.toLowerCase();
                 if (!x.startsWith(y) && !y.startsWith(x)) {
-                    names.add(text + name);
-                    names.add(text + nameList);
+                    names.add(text + quote);
+                    names.add(text + quote + "List");
                 }
             }
         } else {
@@ -135,7 +156,7 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                 String x = text.toLowerCase();
                 String y = quote.toLowerCase();
                 if (!x.startsWith(y) && !y.startsWith(x)) {
-                    names.add(text + name);
+                    names.add(text + quote);
                 }
             }
         }

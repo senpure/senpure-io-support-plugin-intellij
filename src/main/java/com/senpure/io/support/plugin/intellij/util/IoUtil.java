@@ -50,6 +50,7 @@ public class IoUtil {
      * key filePath + bean.type + bean.name + [bean.id]
      */
     private static Map<String, Bean> beanMap = new HashMap<>();
+    private static Map<String, Integer> beanLastIndexMap = new HashMap<>();
     /**
      * key projectPath+命名空间+messageType+name
      */
@@ -180,18 +181,50 @@ public class IoUtil {
         beanMap.put(filePath + (bean.getType().toLowerCase()) + bean.getName() + bean.getId(), bean);
     }
 
-    public static int getBeanNextIndex(String filePath, String identity) {
+    public static Bean getBean(String filePath, String identity) {
+        Bean bean = beanMap.get(filePath + identity);
+        return bean;
+    }
 
+    public static void markLastIndex(String filePath, String identity, int index) {
+        beanLastIndexMap.put(filePath + identity, index);
+    }
+
+    public static int getLastIndex(String filePath, String identity) {
+        Integer integer = beanLastIndexMap.get(filePath + identity);
+        return integer == null ? 0 : integer;
+    }
+
+    private static int addIndex(Set<Integer> indexes, int index, List<Integer> infer) {
+        if (indexes.add(index)) {
+            return index;
+        }
+        index = infer.get(0);
+        infer.set(0, index + 1);
+        return addIndex(indexes, index, infer);
+    }
+
+    public static int getBeanNextIndex(String filePath, String identity) {
         int index = 0;
         Bean bean = beanMap.get(filePath + identity);
         if (bean != null) {
+            //读取index是如果没有显示指定,则是单独从1开始增值,这里推测一个正确的index;
+            List<Integer> infer = new ArrayList<>();
+            infer.add(1);
+            Set<Integer> indexes = new HashSet<>();
             for (Field field : bean.getFields()) {
-                if (field.getIndex() > index) {
-                    index = field.getIndex();
-                }
+                int temp = addIndex(indexes, field.getIndex(), infer);
+                index = temp > index ? temp : index;
             }
+           // index += bean.getFields().size() - indexes.size();
+            int lastIndex = getLastIndex(filePath, identity);
+            if (index < lastIndex) {
+                return 0;
+            }
+            return index + 1;
+        } else {
+            return 0;
         }
-        return index + 1;
     }
 
 

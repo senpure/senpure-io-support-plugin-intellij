@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -57,13 +58,8 @@ public class IoApplicationComment implements BaseComponent {
                     logger.debug("{}", file.getPath());
                 }
                 for (VirtualFile file : files) {
-                    IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
-                    Map<String, IoProtocolReader> ioProtocolReaderMap = reader.getIoProtocolReaderMap();
-                    if (ioProtocolReaderMap.get(file.getPath()) == null) {
-                        ioVirtualFileReader.read(file, ioProtocolReaderMap);
-                        ioProtocolReaderMap.put(file.getPath(), ioVirtualFileReader);
-                        afterRead(project, ioVirtualFileReader);
-                    }
+                    IoProtocolReader ioVirtualFileReader = IoVirtualFileReader.read(file, reader.getIoProtocolReaderMap());
+                    afterRead(project, ioVirtualFileReader);
                 }
 
                 //  PsiFileFactory.
@@ -174,8 +170,11 @@ public class IoApplicationComment implements BaseComponent {
     }
 
     private boolean checkElement(IElementType type) {
-        if (type.
-                equals(TokenType.ERROR_ELEMENT)
+        if (type.equals(TokenType.ERROR_ELEMENT)
+               // || type.equals(TokenType.WHITE_SPACE)
+               // || type.equals(TokenType.BAD_CHARACTER)
+                //|| type.equals(TokenType.NEW_LINE_INDENT)
+               // || type.equals(TokenType.CODE_FRAGMENT)
         ) {
             return false;
         }
@@ -190,24 +189,26 @@ public class IoApplicationComment implements BaseComponent {
         return false;
     }
 
-    private void updateRead(Project project, String filePath,String text) {
-        IoVirtualFileReader ioVirtualFileReader = new IoVirtualFileReader();
+    private void updateRead(Project project, String filePath, String text) {
         IoReader ioReader = IoReader.getInstance(project.getBasePath());
-        ioVirtualFileReader.read(filePath,text, ioReader.getIoProtocolReaderMap());
-        afterRead(project, ioVirtualFileReader);
-        if (!ioVirtualFileReader.isSyntaxError()) {
+        Map<String, IoProtocolReader> ioProtocolReaderMap = new HashMap<>();
+        ioProtocolReaderMap.putAll(ioReader.getIoProtocolReaderMap());
+        ioProtocolReaderMap.remove(filePath);
+        IoProtocolReader ioProtocolReader = IoVirtualFileReader.read(filePath, text, ioProtocolReaderMap);
+        afterRead(project, ioProtocolReader);
+        if (!ioProtocolReader.isSyntaxError()) {
             logger.debug("替换 {}", filePath);
-            ioReader.replace(filePath, ioVirtualFileReader);
+            ioReader.replace(filePath, ioProtocolReader);
         } else {
             IoVirtualFileReader old = (IoVirtualFileReader) ioReader.getIoProtocolReaderMap().
                     get(filePath);
             if (old != null) {
-                for (Bean bean : ioVirtualFileReader.getBeans()) {
+                for (Bean bean : ioProtocolReader.getBeans()) {
                     if (!old.getBeans().contains(bean)) {
                         old.getBeans().add(bean);
                     }
                 }
-                for (Enum bean : ioVirtualFileReader.getEnums()) {
+                for (Enum bean : ioProtocolReader.getEnums()) {
                     if (!old.getEnums().contains(bean)) {
                         old.getEnums().add(bean);
                     }
@@ -219,13 +220,13 @@ public class IoApplicationComment implements BaseComponent {
     private void updateRead(PsiElement element) {
         lastUpdate = System.currentTimeMillis();
 
-       // logger.debug("{}", element.getContainingFile().getVirtualFile());
+        // logger.debug("{}", element.getContainingFile().getVirtualFile());
         VirtualFile virtualFile = element.getContainingFile().getVirtualFile();
-        updateRead(element.getProject(), virtualFile.getPath(),element.getContainingFile().getText());
+        updateRead(element.getProject(), virtualFile.getPath(), element.getContainingFile().getText());
 
     }
 
-    private void afterRead(Project project, IoVirtualFileReader fileReader) {
+    private void afterRead(Project project, IoProtocolReader fileReader) {
         if (!fileReader.isSyntaxError()) {
             IoUtil.setFileNamespace(fileReader.getFilePath(), fileReader.getNamespace());
             for (Message message : fileReader.getMessages()) {
