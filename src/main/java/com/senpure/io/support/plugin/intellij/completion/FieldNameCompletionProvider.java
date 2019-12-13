@@ -79,12 +79,13 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                 nextIndex = IoUtil.getBeanNextIndex(filePath, identity);
                 logger.debug("nextIndex {}", nextIndex);
             }
-            int finalNextIndex = nextIndex;
-            String finalFilePath = filePath;
             for (String name : names) {
                 result.addElement(LookupElementBuilder.create(name));
 
             }
+
+            int finalNextIndex = nextIndex;
+            String finalFilePath = filePath;
             if (nextIndex > 0) {
                 int maxLen = 0;
                 List<String> autoNames = new ArrayList<>();
@@ -94,7 +95,7 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                 }
                 for (String name : autoNames) {
                     int len = name.length();
-                    maxLen = len > maxLen ? len : maxLen;
+                    maxLen = Math.max(len, maxLen);
                 }
                 maxLen += 11;
                 for (String name : autoNames) {
@@ -105,7 +106,6 @@ public class FieldNameCompletionProvider extends CompletionProvider {
                     );
                 }
             }
-
 
         }
     }
