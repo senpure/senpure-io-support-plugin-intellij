@@ -56,9 +56,9 @@ public class FieldNameCompletionProvider extends CompletionProvider {
             String quote = pre.getText();
             List<String> names = new ArrayList<>();
             if (text.length() > 0) {
-                //加入原始字符串
-                names.add(text);
                 if (base) {
+                    //加入原始字符串
+                    names.add(text);
                     names.add(quote + "Value");
                 } else {
                     getName(quote, text, list, names);
