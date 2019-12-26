@@ -49,7 +49,7 @@ public class FieldTypeCompletionProvider extends CompletionProvider {
                     || elementType.equals(IoTypes.T_SEMICOLON)
                     || elementType.equals(IoTypes.T_FIELD_COMMENT)) {
 
-                for (String s : ProtocolUtil.baseFields) {
+                for (String s : ProtocolUtil.standardBaseFields) {
                     result.addElement(LookupElementBuilder.create(s));
                 }
                 List<Bean> beans = getBeans(parameters.getPosition().getProject());
